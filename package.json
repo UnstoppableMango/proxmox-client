@@ -7,7 +7,8 @@
   "author": "Erik Rasmussen <ecr.referee@hotmail.com>",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "generator": "yarn openapi-generator-cli"
+    "generator": "yarn openapi-generator-cli",
+    "generate": "yarn generator batch --root-dir src/options src/options/*.yaml"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.3.10",
