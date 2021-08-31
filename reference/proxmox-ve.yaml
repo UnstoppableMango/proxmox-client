@@ -54,6 +54,7 @@ paths:
       description: Storage index
     post:
       summary: Create Storage
+      tags: []
       operationId: post-storage
       responses:
         '200':
