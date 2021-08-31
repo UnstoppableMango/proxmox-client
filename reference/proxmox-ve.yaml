@@ -2,8 +2,11 @@ openapi: 3.1.0
 info:
   title: Proxmox VE
   version: '1.0'
+  contact:
+    name: Erik Rasmussen
+  description: OpenAPI reference for the Proxmox VE REST API
 servers:
-  - url: /api2/json
+  - url: 'https://localhost:8006/api2/json'
     description: ''
 paths:
   /version:
