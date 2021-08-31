@@ -26,7 +26,7 @@ paths:
                     type: string
                   repoid:
                     type: string
-                  '':
+                  version:
                     type: string
       description: API version details. The result also includes the global datacenter confguration.
   /storage:
