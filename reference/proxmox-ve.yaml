@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Proxmox VE
   version: '1.0'
@@ -117,22 +117,22 @@ paths:
 components:
   schemas:
     StorageType:
+      type: string
       title: StorageType
       description: Storage type
-      oneOf:
-        - const: btrfs
-        - const: cephfs
-        - const: cifs
-        - const: dir
-        - const: glusterfs
-        - const: iscsi
-        - const: iscsidirect
-        - const: lvm
-        - const: lvmthin
-        - const: nfs
-        - const: pbs
-        - const: rbd
-        - const: zfs
-        - const: zfspool
-      type: string
+      enum:
+        - btrfs
+        - cephfs
+        - cifs
+        - dir
+        - glusterfs
+        - iscsi
+        - iscsidirect
+        - lvm
+        - lvmthin
+        - nfs
+        - pbs
+        - rbd
+        - zfs
+        - zfspool
   responses: {}
