@@ -2,7 +2,9 @@ openapi: 3.1.0
 info:
   title: Proxmox VE
   version: '1.0'
-servers: []
+servers:
+  - url: /api2/json
+    description: ''
 paths:
   /version:
     get:
