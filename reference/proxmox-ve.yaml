@@ -1,0 +1,132 @@
+openapi: 3.1.0
+info:
+  title: Proxmox VE
+  version: '1.0'
+servers: []
+paths:
+  /version:
+    get:
+      summary: API version details
+      tags: []
+      operationId: get-version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  release:
+                    type: string
+                  repoid:
+                    type: string
+                  '':
+                    type: string
+      description: API version details. The result also includes the global datacenter confguration.
+  /storage:
+    get:
+      summary: Storage index
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: get-storage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  $ref: '#/components/schemas/StorageType'
+      description: Storage index
+    post:
+      summary: Create Storage
+      operationId: post-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  storage:
+                    type: string
+                  type:
+                    $ref: '#/components/schemas/StorageType'
+                  config:
+                    type: object
+                required:
+                  - storage
+                  - type
+      description: Create a new storage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storage:
+                  type: string
+                  description: The storage identifier
+                type:
+                  $ref: '#/components/schemas/StorageType'
+                authsupported:
+                  type: string
+                  description: Is auth supported
+                base:
+                  type: string
+                  description: Base volume. This volume is automatically activated
+                blocksize:
+                  type: string
+                  description: Block size
+                bwlimit:
+                  type: string
+                  description: Set bandwidth/io limit for various operations
+                comstar_hg:
+                  type: string
+                  description: Host group for comstar views
+                comstart_tg:
+                  type: string
+                  description: Target group for comstar views
+                content:
+                  type: string
+                  description: |-
+                    Allowed content types.
+                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
+                datastore:
+                  type: string
+                  description: Proxmox Backup Server datastore name
+              required:
+                - storage
+                - type
+components:
+  schemas:
+    StorageType:
+      title: StorageType
+      description: Storage type
+      oneOf:
+        - const: btrfs
+        - const: cephfs
+        - const: cifs
+        - const: dir
+        - const: glusterfs
+        - const: iscsi
+        - const: iscsidirect
+        - const: lvm
+        - const: lvmthin
+        - const: nfs
+        - const: pbs
+        - const: rbd
+        - const: zfs
+        - const: zfspool
+      type: string
+  responses: {}
