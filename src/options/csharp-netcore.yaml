@@ -1,3 +1,0 @@
-'!include': 'common.yaml'
-outputDir: generated/dotnet
-generatorName: csharp-netcore

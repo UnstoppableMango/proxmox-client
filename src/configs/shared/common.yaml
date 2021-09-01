@@ -1,0 +1,4 @@
+inputSpec: reference/proxmox-ve.yaml
+globalProperties:
+  apiTests: false
+  modelTests: false
