@@ -8,7 +8,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "generator": "yarn openapi-generator-cli",
-    "generate": "yarn generator batch --clean --root-dir generated -- src/configs/*.yaml"
+    "generate": "yarn generator batch --clean --root-dir src -- src/configs/*.yaml"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.3.10",

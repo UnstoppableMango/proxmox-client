@@ -1,0 +1,5 @@
+[*]
+insert_final_newline = true
+
+[*.*{proj,props,target}]
+indent_size = 2

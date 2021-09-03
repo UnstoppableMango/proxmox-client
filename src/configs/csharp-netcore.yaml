@@ -1,5 +1,5 @@
 '!include': 'shared/common.yaml'
-outputDir: dotnet
+outputDir: dotnet/generated
 generatorName: csharp-netcore
 library: httpclient # IDK why this one isn't working under additional properties
 additionalProperties: # These seem to work at root or under `additionalProperties` idfk
