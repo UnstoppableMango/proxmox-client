@@ -157,6 +157,7 @@ namespace {{packageName}}.Client
             set { throw new InvalidOperationException("Not allowed to set content type."); }
         }
     }
+
     /// <summary>
     /// Provides a default implementation of an Api client (both synchronous and asynchronous implementations),
     /// encapsulating general REST accessor use cases.
@@ -381,12 +382,14 @@ namespace {{packageName}}.Client
                 }
             }
 
-
-
             // TODO provide an alternative that allows cookies per request instead of per API client
             if (options.Cookies != null && options.Cookies.Count > 0)
             {
+#if NETSTANDARD2_0
+                request.Properties["CookieContainer"] = options.Cookies;
+#else
                 request.Options.Set(new HttpRequestOptionsKey<List<Cookie>>("CookieContainer"), options.Cookies);
+#endif
             }
 
             return request;
@@ -469,8 +472,12 @@ namespace {{packageName}}.Client
                 _httpClientHandler.ClientCertificates.AddRange(configuration.ClientCertificates);
             }
 
+#if NETSTANDARD2_0
+            var cookieContainer = req.Properties.ContainsKey("CookieContainer") ? req.Properties["CookieContainer"] as List<Cookie> : null;
+#else
             List<Cookie> cookieContainer = null;
             req.Options.TryGetValue(new HttpRequestOptionsKey<List<Cookie>>("CookieContainer"), out cookieContainer);
+#endif
 
             if (cookieContainer != null)
             {
