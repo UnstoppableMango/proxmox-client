@@ -18,4 +18,5 @@ additionalProperties: # These seem to work at root or under `additionalPropertie
   sortParamsByRequiredFlag: true
   targetFramework: netstandard2.0;net5.0
   useCollection: false
+  useCompareNetObjects: false
   useDateTimeOffset: true
