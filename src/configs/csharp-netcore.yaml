@@ -8,6 +8,8 @@ additionalProperties: # These seem to work at root or under `additionalPropertie
   nullableReferenceTypes: true
   optionalMethodArgument: true
   packageName: UnMango.Proxmox.Generated
+  packageTitle: UnMango.Proxmox Generated Client Library
+  packageDescription: Proxmox VE REST API client generated from a custom OpenAPI spec
   packageCompany: UnMango
   packageAuthors: UnstoppableMango
   packageVersion: 0.0.1
