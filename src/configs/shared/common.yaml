@@ -1,4 +1,6 @@
 inputSpec: reference/proxmox-ve.yaml
+gitUserId: UnstoppableMango
+gitRepoId: proxmox-client
 globalProperties:
   apiTests: false
   modelTests: false

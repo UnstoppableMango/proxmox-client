@@ -3,11 +3,14 @@ outputDir: dotnet/generated
 generatorName: csharp-netcore
 library: httpclient # IDK why this one isn't working under additional properties
 additionalProperties: # These seem to work at root or under `additionalProperties` idfk
+  hideGenerationTimestamp: false
   netCoreProjectFile: true
   nullableReferenceTypes: true
   optionalMethodArgument: true
   packageName: UnMango.Proxmox.Generated
-  packageVersion: 0.1.0
+  packageCompany: UnMango
+  packageAuthors: UnstoppableMango
+  packageVersion: 0.0.1
   returnICollection: true
   sortParamsByRequiredFlag: true
   targetFramework: netstandard2.0;net5.0
