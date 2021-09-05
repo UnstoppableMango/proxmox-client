@@ -9,7 +9,8 @@
   "scripts": {
     "clean": "ts-node scripts/clean.ts",
     "generator": "yarn openapi-generator-cli",
-    "generate": "yarn generator batch --clean --root-dir src -- src/configs/*.yaml"
+    "generate": "yarn generator batch --clean --root-dir src -- src/configs/*.yaml",
+    "validate": "yarn generator validate -i reference/proxmox-ve.yaml"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.3.10",
