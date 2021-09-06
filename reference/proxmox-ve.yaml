@@ -127,7 +127,33 @@ paths:
           $ref: '#/components/responses/CreateTicketResponse'
       description: Create or verify authentication ticket.
       requestBody:
-        $ref: '#/components/requestBodies/CreateTicketRequest'
+        content:
+          application/json:
+            schema:
+              title: CreateTicketRequest
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User name
+                password:
+                  type: string
+                  description: The secret password. This can also be a valid ticket.
+                otp:
+                  type: string
+                  description: One-time password to Two-factor authentication
+                path:
+                  type: string
+                  description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+                privs:
+                  type: string
+                  description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+                realm:
+                  type: string
+                  description: You can optionally pass the realm using this parameter. Normally the realm is simply added to the username '<username>@<realm>'
+              required:
+                - username
+                - password
 components:
   schemas:
     StorageType:
@@ -180,31 +206,3 @@ components:
                 $ref: '#/components/schemas/StorageType'
           examples: {}
       description: Request to get all storage
-    CreateTicketRequest:
-      content:
-        application/json:
-          schema:
-            title: CreateTicketRequest
-            type: object
-            properties:
-              username:
-                type: string
-                description: User name
-              password:
-                type: string
-                description: The secret password. This can also be a valid ticket.
-              otp:
-                type: string
-                description: One-time password to Two-factor authentication
-              path:
-                type: string
-                description: 'Verify ticket, and check if user has ''privs'' on ''path'''
-              privs:
-                type: string
-                description: 'Verify ticket, and check if user has ''privs'' on ''path'''
-              realm:
-                type: string
-                description: You can optionally pass the realm using this parameter. Normally the realm is simply added to the username '<username>@<realm>'
-            required:
-              - username
-              - password
