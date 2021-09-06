@@ -154,6 +154,7 @@ components:
       content:
         application/json:
           schema:
+            title: CreateTicketResponse
             type: object
             properties:
               username:
@@ -171,6 +172,7 @@ components:
       content:
         application/json:
           schema:
+            title: GetAllStorageRequest
             type: object
             properties:
               type:
@@ -181,6 +183,7 @@ components:
       content:
         application/json:
           schema:
+            title: CreateTicketRequest
             type: object
             properties:
               username:
