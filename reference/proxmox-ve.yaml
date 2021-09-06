@@ -108,6 +108,25 @@ paths:
               required:
                 - storage
                 - type
+  /access/ticket:
+    get:
+      summary: Get Ticket
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-access-ticket
+      description: Dummy. Useful for formatters which want to provide a login page.
+    post:
+      summary: Create Ticket
+      tags: []
+      operationId: post-access-ticket
+      responses:
+        '200':
+          $ref: '#/components/responses/CreateTicketResponse'
+      description: Create or verify authentication ticket.
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTicketRequest'
 components:
   schemas:
     StorageType:
@@ -129,7 +148,24 @@ components:
         - rbd
         - zfs
         - zfspool
-  responses: {}
+  responses:
+    CreateTicketResponse:
+      description: Returned when creating or verifying a ticket
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              CSRFPreventionToken:
+                type: string
+              clustername:
+                type: string
+              ticket:
+                type: string
+            required:
+              - username
   requestBodies:
     GetAllStorageRequest:
       content:
@@ -139,3 +175,32 @@ components:
             properties:
               type:
                 $ref: '#/components/schemas/StorageType'
+          examples: {}
+      description: Request to get all storage
+    CreateTicketRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: User name
+              password:
+                type: string
+                description: The secret password. This can also be a valid ticket.
+              otp:
+                type: string
+                description: One-time password to Two-factor authentication
+              path:
+                type: string
+                description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+              privs:
+                type: string
+                description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+              realm:
+                type: string
+                description: You can optionally pass the realm using this parameter. Normally the realm is simply added to the username '<username>@<realm>'
+            required:
+              - username
+              - password
