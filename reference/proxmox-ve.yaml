@@ -132,7 +132,23 @@ paths:
       operationId: post-access-ticket
       responses:
         '200':
-          $ref: '#/components/responses/CreateTicketResponse'
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: CreateTicketResponse
+                type: object
+                properties:
+                  username:
+                    type: string
+                  CSRFPreventionToken:
+                    type: string
+                  clustername:
+                    type: string
+                  ticket:
+                    type: string
+                required:
+                  - username
       description: Create or verify authentication ticket.
       requestBody:
         content:
@@ -183,23 +199,5 @@ components:
         - rbd
         - zfs
         - zfspool
-  responses:
-    CreateTicketResponse:
-      description: Returned when creating or verifying a ticket
-      content:
-        application/json:
-          schema:
-            title: CreateTicketResponse
-            type: object
-            properties:
-              username:
-                type: string
-              CSRFPreventionToken:
-                type: string
-              clustername:
-                type: string
-              ticket:
-                type: string
-            required:
-              - username
+  responses: {}
   requestBodies: {}
