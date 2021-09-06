@@ -45,7 +45,15 @@ paths:
                 items:
                   type: string
       requestBody:
-        $ref: '#/components/requestBodies/GetAllStorageRequest'
+        content:
+          application/json:
+            schema:
+              title: GetAllStorageRequest
+              type: object
+              properties:
+                type:
+                  $ref: '#/components/schemas/StorageType'
+            examples: {}
     post:
       summary: Create Storage
       tags: []
@@ -194,15 +202,4 @@ components:
                 type: string
             required:
               - username
-  requestBodies:
-    GetAllStorageRequest:
-      content:
-        application/json:
-          schema:
-            title: GetAllStorageRequest
-            type: object
-            properties:
-              type:
-                $ref: '#/components/schemas/StorageType'
-          examples: {}
-      description: Request to get all storage
+  requestBodies: {}
