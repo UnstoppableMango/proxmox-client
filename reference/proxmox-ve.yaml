@@ -72,6 +72,7 @@ paths:
         content:
           application/json:
             schema:
+              title: CreateStorageRequest
               type: object
               properties:
                 storage:
