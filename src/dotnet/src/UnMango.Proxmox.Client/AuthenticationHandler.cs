@@ -45,21 +45,32 @@ namespace UnMango.Proxmox.Client
                 var content = new FormUrlEncodedContent(new Dictionary<string, string> {
                     ["username"] = _username,
                     ["password"] = _password,
-                });
+                }!);
 
                 using var response = await client.PostAsync("access/ticket", content, cancellationToken);
                 response.EnsureSuccessStatusCode();
-                
+
+#if NETSTANDARD2_0
                 using var responseStream = await response.Content.ReadAsStreamAsync();
+#else
+                await using var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+#endif
+
                 _ticketResponse = await JsonSerializer.DeserializeAsync<CreateTicketResponse>(
                     responseStream, null, cancellationToken);
             }
 
             if (_ticketResponse == null) throw new("Unable to authenticate");
 
-            request.Properties["CookieContainer"] = new List<Cookie> {
+            var cookies = new List<Cookie> {
                 new("PVEAuthCookie", _ticketResponse.Ticket)
             };
+
+#if NETSTANDARD2_0
+            request.Properties["CookieContainer"] = cookies;
+#else
+            request.Options.Set(new("CookieContainer"), cookies);
+#endif
 
             if (request.Method == HttpMethod.Post || request.Method == HttpMethod.Put || request.Method == HttpMethod.Delete)
             {
