@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -45,7 +46,7 @@ namespace UnMango.Proxmox.Client.Tests
             var ticketResponse = new CreateTicketResponse {
                 Ticket = expectedTicket
             };
-            
+
             var responseJson = JsonSerializer.Serialize(ticketResponse);
             _innerHandler.SetupRequest(HttpMethod.Post, "https://example.com/access/ticket")
                 .ReturnsResponse(HttpStatusCode.OK, responseJson);
@@ -55,7 +56,7 @@ namespace UnMango.Proxmox.Client.Tests
             var request = new HttpRequestMessage(method, route);
 
             _ = await _client.SendAsync(request);
-            
+
             _innerHandler.Verify();
             _outerHandler.VerifyRequest(message => {
                 if (!message.Options.TryGetValue(new("CookieContainer"), out List<Cookie>? cookies))
@@ -63,12 +64,42 @@ namespace UnMango.Proxmox.Client.Tests
 
                 if (cookies is not { Count: > 0 })
                     return false;
-                
+
                 return cookies[0] is {
                     Name: "PVEAuthCookie",
                     Value: expectedTicket
                 };
             });
+        }
+
+        public static IEnumerable<object[]> RequestsTokenArgs = new[] {
+            new object[] { HttpMethod.Delete },
+            new object[] { HttpMethod.Post },
+            new object[] { HttpMethod.Put }
+        };
+
+        [Theory]
+        [MemberData(nameof(RequestsTokenArgs))]
+        public async Task RequestsToken(HttpMethod method)
+        {
+            const string expectedToken = "Token";
+            var ticketResponse = new CreateTicketResponse {
+                CSRFPreventionToken = expectedToken
+            };
+
+            var responseJson = JsonSerializer.Serialize(ticketResponse);
+            _innerHandler.SetupRequest(HttpMethod.Post, "https://example.com/access/ticket")
+                .ReturnsResponse(HttpStatusCode.OK, responseJson);
+
+            const string route = "https://example.com/does/not/matter";
+            _outerHandler.SetupRequest(method, route).ReturnsResponse(HttpStatusCode.OK);
+            var request = new HttpRequestMessage(method, route);
+
+            _ = await _client.SendAsync(request);
+
+            _innerHandler.Verify();
+            _outerHandler.VerifyRequest(message => message.Headers.TryGetValues("CSRFPreventionToken", out var values)
+                                                   && values.Contains(expectedToken));
         }
     }
 }

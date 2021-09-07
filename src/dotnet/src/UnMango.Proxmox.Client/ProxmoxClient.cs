@@ -10,7 +10,7 @@ namespace UnMango.Proxmox.Client
         public static IDefaultApi Create(string basePath, string username, string password)
         {
             var authHandler = new AuthenticationHandler(basePath, username, password);
-            return new DefaultApi(new HttpClient(authHandler));
+            return new DefaultApi(new HttpClient(authHandler)); // TODO: Need to configure inner handler
         }
     }
 }
