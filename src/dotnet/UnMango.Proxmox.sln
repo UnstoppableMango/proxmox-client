@@ -12,9 +12,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnMango.Proxmox.Generated", "generated\src\UnMango.Proxmox.Generated\UnMango.Proxmox.Generated.csproj", "{0DFA90A7-8D99-4FD3-A85C-7BABC69A79F7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{533332B8-815D-449F-9F68-5737BC907FA3}"
-ProjectSection(SolutionItems) = preProject
-	Directory.Build.props = Directory.Build.props
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8D597C62-AC9B-432D-9549-B77190FABB89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnMango.Proxmox.Client.Tests", "test\UnMango.Proxmox.Client.Tests\UnMango.Proxmox.Client.Tests.csproj", "{DC2B6206-3A0D-470A-ADF3-AE958B910627}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,14 @@ Global
 		{0DFA90A7-8D99-4FD3-A85C-7BABC69A79F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DFA90A7-8D99-4FD3-A85C-7BABC69A79F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DFA90A7-8D99-4FD3-A85C-7BABC69A79F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC2B6206-3A0D-470A-ADF3-AE958B910627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC2B6206-3A0D-470A-ADF3-AE958B910627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC2B6206-3A0D-470A-ADF3-AE958B910627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC2B6206-3A0D-470A-ADF3-AE958B910627}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{43C6F50B-D8CB-4388-BD12-E7D60EF91024} = {EE111CDA-170C-4EB9-90D7-A03899AD59D2}
 		{0DFA90A7-8D99-4FD3-A85C-7BABC69A79F7} = {0F195567-5CDA-4CA2-BDAC-0FBF37FF6893}
+		{DC2B6206-3A0D-470A-ADF3-AE958B910627} = {8D597C62-AC9B-432D-9549-B77190FABB89}
 	EndGlobalSection
 EndGlobal

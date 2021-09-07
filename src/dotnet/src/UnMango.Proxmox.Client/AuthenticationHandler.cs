@@ -13,24 +13,26 @@ namespace UnMango.Proxmox.Client
     [PublicAPI]
     public class AuthenticationHandler : DelegatingHandler
     {
-        private readonly string _baseUrl;
+        private readonly HttpClient _client;
         private readonly string _username;
         private readonly string _password;
         private CreateTicketResponse? _ticketResponse;
 
-        public AuthenticationHandler(string baseUrl, string username, string password)
+        internal AuthenticationHandler(HttpClient client, string username, string password)
         {
-            if (string.IsNullOrWhiteSpace(baseUrl))
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(baseUrl));
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(username));
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(password));
 
-            _baseUrl = baseUrl;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _username = username;
             _password = password;
         }
+
+        public AuthenticationHandler(string baseUrl, string username, string password)
+            : this(new HttpClient{ BaseAddress = new($"{baseUrl}/api2/json") }, username, password)
+        { }
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
@@ -38,9 +40,7 @@ namespace UnMango.Proxmox.Client
         {
             if (_ticketResponse == null)
             {
-                using var client = new HttpClient {
-                    BaseAddress = new($"{_baseUrl}/api2/json")
-                };
+                using var client = _client;
 
                 var content = new FormUrlEncodedContent(new Dictionary<string, string> {
                     ["username"] = _username,
@@ -72,7 +72,9 @@ namespace UnMango.Proxmox.Client
             request.Options.Set(new("CookieContainer"), cookies);
 #endif
 
-            if (request.Method == HttpMethod.Post || request.Method == HttpMethod.Put || request.Method == HttpMethod.Delete)
+            if (request.Method == HttpMethod.Post ||
+                request.Method == HttpMethod.Put ||
+                request.Method == HttpMethod.Delete)
             {
                 request.Headers.Add("CSRFPreventionToken", _ticketResponse.CSRFPreventionToken);
             }
