@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: Proxmox VE
+  version: '1.0'
+  contact:
+    name: Erik Rasmussen
+  description: OpenAPI reference for the Proxmox VE REST API
+servers:
+  - url: 'https://localhost:8006/api2/json'
+    description: ''
+paths:
+  /version:
+    get:
+      summary: API version details
+      tags: []
+      operationId: get-version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: GetVersionResponse
+                type: object
+                properties:
+                  release:
+                    type: string
+                  repoid:
+                    type: string
+                  version:
+                    type: string
+      description: API version details. The result also includes the global datacenter confguration.
+  /storage:
+    get:
+      summary: Storage index
+      tags: []
+      operationId: get-storage
+      description: Storage index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: GetAllStorageRequest
+              type: object
+              properties:
+                type:
+                  $ref: '#/components/schemas/StorageType'
+            examples: {}
+    post:
+      summary: Create Storage
+      tags: []
+      operationId: post-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: CreateStorageRequest
+                type: object
+                properties:
+                  storage:
+                    type: string
+                  type:
+                    $ref: '#/components/schemas/StorageType'
+                  config:
+                    type: object
+                required:
+                  - storage
+                  - type
+      description: Create a new storage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: CreateStorageRequest
+              type: object
+              properties:
+                storage:
+                  type: string
+                  description: The storage identifier
+                type:
+                  $ref: '#/components/schemas/StorageType'
+                authsupported:
+                  type: string
+                  description: Is auth supported
+                base:
+                  type: string
+                  description: Base volume. This volume is automatically activated
+                blocksize:
+                  type: string
+                  description: Block size
+                bwlimit:
+                  type: string
+                  description: Set bandwidth/io limit for various operations
+                comstar_hg:
+                  type: string
+                  description: Host group for comstar views
+                comstart_tg:
+                  type: string
+                  description: Target group for comstar views
+                content:
+                  type: string
+                  description: |-
+                    Allowed content types.
+                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
+                datastore:
+                  type: string
+                  description: Proxmox Backup Server datastore name
+              required:
+                - storage
+                - type
+  /access/ticket:
+    get:
+      summary: Get Ticket
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-access-ticket
+      description: Dummy. Useful for formatters which want to provide a login page.
+    post:
+      summary: Create Ticket
+      tags: []
+      operationId: post-access-ticket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: CreateTicketResponse
+                type: object
+                properties:
+                  username:
+                    type: string
+                  CSRFPreventionToken:
+                    type: string
+                  clustername:
+                    type: string
+                  ticket:
+                    type: string
+                required:
+                  - username
+      description: Create or verify authentication ticket.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: CreateTicketRequest
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User name
+                password:
+                  type: string
+                  description: The secret password. This can also be a valid ticket.
+                otp:
+                  type: string
+                  description: One-time password to Two-factor authentication
+                path:
+                  type: string
+                  description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+                privs:
+                  type: string
+                  description: 'Verify ticket, and check if user has ''privs'' on ''path'''
+                realm:
+                  type: string
+                  description: You can optionally pass the realm using this parameter. Normally the realm is simply added to the username '<username>@<realm>'
+              required:
+                - username
+                - password
+components:
+  schemas:
+    StorageType:
+      type: string
+      title: StorageType
+      description: Storage type
+      enum:
+        - btrfs
+        - cephfs
+        - cifs
+        - dir
+        - glusterfs
+        - iscsi
+        - iscsidirect
+        - lvm
+        - lvmthin
+        - nfs
+        - pbs
+        - rbd
+        - zfs
+        - zfspool
+  responses: {}
+  requestBodies: {}
