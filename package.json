@@ -1,0 +1,12 @@
+{
+    "name": "proxmox-client",
+    "private": true,
+    "scripts": {
+        "generate": "autorest reference/readme.md",
+        "csharp": "yarn generate --csharp",
+        "typescript": "yarn generate --typescript"
+    },
+    "devDependencies": {
+        "autorest": "^3.4.0"
+    }
+}
