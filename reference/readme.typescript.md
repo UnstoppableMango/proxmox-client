@@ -7,6 +7,6 @@ package-name: "@unmango/proxmox-ve"
 generate-metadata: true
 disable-async-iterators: false
 add-credential: false
-output-folder: ../generated/typescript
+output-folder: $(output-folder)/typescript
 clear-output-folder: true
 ```

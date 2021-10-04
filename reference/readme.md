@@ -1,5 +1,7 @@
 # Proxmox VE AutoRest configuration File
 
+> see https://aka.ms/autorest
+
 ## Basic Information
 
 ```yaml
@@ -11,7 +13,7 @@ description: Proxmox VE Client
 
 ```yaml
 input-file: proxmox-ve.yaml
-output-root: generated
+output-folder: ../generated
 ```
 
 ## .NET
