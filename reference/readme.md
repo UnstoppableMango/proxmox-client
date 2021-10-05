@@ -13,7 +13,7 @@ description: Proxmox VE Client
 
 ```yaml
 input-file: proxmox-ve.yaml
-output-folder: ../generated
+output-folder: ../src
 ```
 
 ## .NET
