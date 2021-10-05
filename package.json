@@ -1,0 +1,14 @@
+{
+  "name": "proxmox-client",
+  "version": "0.0.1",
+  "repository": "https://github.com/UnstoppableMango/proxmox-client.git",
+  "author": "Erik Rasmussen <ecr.referee@hotmail.com>",
+  "license": "GPL v3",
+  "private": true,
+  "scripts": {
+    "typescript": "oazapfts reference/proxmox-ve.yaml src/typescript/generated/client.ts"
+  },
+  "devDependencies": {
+    "oazapfts": "^3.5.0"
+  }
+}
