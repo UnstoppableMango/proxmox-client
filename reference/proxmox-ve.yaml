@@ -180,6 +180,24 @@ paths:
               required:
                 - username
                 - password
+  '/nodes/{node}/storage/{storage}/download-url':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    post:
+      summary: ''
+      operationId: post-nodes-node-storage-storage-download-url
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     StorageType:
