@@ -45,16 +45,27 @@ paths:
                 type: array
                 items:
                   type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              title: GetAllStorageRequest
-              type: object
-              properties:
-                type:
-                  $ref: '#/components/schemas/StorageType'
-            examples: {}
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - btrfs
+              - cephfs
+              - cifs
+              - dir
+              - glusterfs
+              - iscsi
+              - iscsidirect
+              - lvm
+              - lvmthin
+              - nfs
+              - pbs
+              - rbd
+              - zfs
+              - zfspool
+          in: query
+          name: type
+          description: Only list storage of a specfic type
     post:
       summary: Create Storage
       tags: []
