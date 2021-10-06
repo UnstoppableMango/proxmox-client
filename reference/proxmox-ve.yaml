@@ -80,7 +80,7 @@ paths:
       description: Create a new storage
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               title: CreateStorageRequest
               type: object
@@ -154,7 +154,7 @@ paths:
       description: Create or verify authentication ticket.
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               title: CreateTicketRequest
               type: object
@@ -180,6 +180,7 @@ paths:
               required:
                 - username
                 - password
+        description: ''
   '/nodes/{node}/storage/{storage}/download-url':
     parameters:
       - schema:
@@ -193,11 +194,35 @@ paths:
         in: path
         required: true
     post:
-      summary: ''
+      summary: Download Url
+      tags: []
       operationId: post-nodes-node-storage-storage-download-url
       responses:
         '200':
           description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  $ref: '#/components/schemas/ContentType'
+                filename:
+                  type: string
+                url:
+                  type: string
+                checksum:
+                  type: string
+                checksum-algorithm:
+                  $ref: '#/components/schemas/ChecksumAlgorithm'
+                verify-certificates:
+                  type: boolean
+              required:
+                - content
+                - filename
+                - url
+      description: Download templates and ISO images by using an URL
 components:
   schemas:
     StorageType:
@@ -219,5 +244,21 @@ components:
         - rbd
         - zfs
         - zfspool
+    ContentType:
+      type: string
+      title: ContentType
+      enum:
+        - iso
+        - vztmpl
+    ChecksumAlgorithm:
+      type: string
+      title: ChecksumAlgorithm
+      enum:
+        - md5
+        - sha1
+        - sha224
+        - sha256
+        - sha384
+        - sha512
   responses: {}
   requestBodies: {}
