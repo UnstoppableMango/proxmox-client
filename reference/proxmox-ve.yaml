@@ -273,3 +273,9 @@ components:
         - sha512
   responses: {}
   requestBodies: {}
+  securitySchemes:
+    Authorization:
+      name: API Key
+      type: apiKey
+      in: header
+      description: Has the form PVEAPIToken=USER@REALM!TOKENID=UUID
