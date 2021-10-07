@@ -700,6 +700,60 @@ paths:
                   type: integer
                   minimum: 1
                   maximum: 30
+  '/nodes/{node}/qemu/{vmid}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: integer
+          minimum: 1
+        name: vmid
+        in: path
+        required: true
+    get:
+      summary: List vm operations
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    subdir:
+                      type: string
+      operationId: get-vm-operations
+      description: List the endpoints available to perform operations on this vm
+    delete:
+      summary: Destroy VM
+      operationId: delete-vm
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                destroy-unreferenced-disks:
+                  type: boolean
+                  default: false
+                purge:
+                  type: boolean
+                skiplock:
+                  type: boolean
 components:
   schemas:
     StorageType:
