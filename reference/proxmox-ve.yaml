@@ -790,7 +790,7 @@ paths:
                       vmid: ''
                     data: null
       operationId: get-cluster-nextid
-      description: Get the next free VM ID. If you pass a VM ID it will rais an error if the ID is already used.
+      description: Get the next free VM ID. If you pass a VM ID it will raise an error if the ID is already used.
       parameters:
         - schema:
             type: integer
