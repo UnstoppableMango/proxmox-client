@@ -616,6 +616,74 @@ paths:
                   type: string
                 watchdog:
                   type: string
+  '/nodes/{node}/storage/{storage}/content/{volume}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: volume
+        in: path
+        required: true
+    get:
+      summary: Get volume attributes
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  format:
+                    type: string
+                  path:
+                    type: string
+                  size:
+                    type: integer
+                  used:
+                    type: integer
+                  notes:
+                    type: string
+                required:
+                  - format
+                  - path
+                  - size
+                  - used
+      operationId: get-volume-attributes
+      description: Get volume attributes
+      parameters: []
+    put:
+      summary: Update volume attributes
+      tags: []
+      operationId: put-volume-attributes
+      responses:
+        '200':
+          description: OK
+      description: Update volume attributes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+    delete:
+      summary: Delete volume
+      operationId: delete-volume
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     StorageType:
