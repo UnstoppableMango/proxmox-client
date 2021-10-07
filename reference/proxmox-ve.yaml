@@ -207,7 +207,7 @@ paths:
     post:
       summary: Download Url
       tags: []
-      operationId: post-nodes-node-storage-storage-download-url
+      operationId: post-download-url
       responses:
         '200':
           description: OK
@@ -234,6 +234,8 @@ paths:
                 - filename
                 - url
       description: Download templates and ISO images by using an URL
+      security:
+        - Authorization: []
 components:
   schemas:
     StorageType:
