@@ -732,6 +732,7 @@ paths:
       description: List the endpoints available to perform operations on this vm
     delete:
       summary: Destroy VM
+      tags: []
       operationId: delete-vm
       responses:
         '200':
@@ -754,6 +755,48 @@ paths:
                   type: boolean
                 skiplock:
                   type: boolean
+  /cluster/nextid:
+    get:
+      summary: Get next free VM Id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      vmid:
+                        type: string
+                    required:
+                      - vmid
+                  data: {}
+                required:
+                  - error
+                x-examples:
+                  example-1:
+                    error:
+                      vmid: ''
+                    data: null
+      operationId: get-cluster-nextid
+      description: Get the next free VM ID. If you pass a VM ID it will rais an error if the ID is already used.
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          in: query
+          name: vmid
 components:
   schemas:
     StorageType:
