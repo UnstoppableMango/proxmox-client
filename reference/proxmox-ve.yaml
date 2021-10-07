@@ -66,6 +66,8 @@ paths:
           in: query
           name: type
           description: Only list storage of a specfic type
+      security:
+        - Authorization: []
     post:
       summary: Create Storage
       tags: []
@@ -213,7 +215,7 @@ paths:
           description: OK
       requestBody:
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
@@ -236,6 +238,77 @@ paths:
       description: Download templates and ISO images by using an URL
       security:
         - Authorization: []
+  '/nodes/{node}/qemu':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: VM Index
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum:
+                        - stopped
+                        - running
+                    vmid:
+                      type: integer
+                    cpus:
+                      type: number
+                    lock:
+                      type: string
+                    maxdisk:
+                      type: integer
+                    maxmem:
+                      type: integer
+                    name:
+                      type: string
+                    pid:
+                      type: integer
+                    qmpstatus:
+                      type: string
+                    running-machine:
+                      type: string
+                    running-qemu:
+                      type: string
+                    tags:
+                      type: string
+                    uptime:
+                      type: integer
+                  required:
+                    - status
+                    - vmid
+      operationId: get-node-qemu
+      description: Virtual machine index (per node).
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: full
+          description: Determine the full status of active VMs
+    post:
+      summary: Create VM
+      operationId: post-node-qemu
+      responses:
+        '200':
+          description: OK
+      security:
+        - Authorization: []
+      parameters: []
 components:
   schemas:
     StorageType:
