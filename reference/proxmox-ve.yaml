@@ -248,6 +248,8 @@ paths:
               required:
                 - storage
                 - type
+      security:
+        - Authorization: []
   /access/ticket:
     get:
       summary: Get Ticket
@@ -957,6 +959,8 @@ paths:
       operationId: get-volume-attributes
       description: Get volume attributes
       parameters: []
+      security:
+        - Authorization: []
     put:
       summary: Update volume attributes
       tags: []
@@ -973,6 +977,8 @@ paths:
               properties:
                 notes:
                   type: string
+      security:
+        - Authorization: []
     delete:
       summary: Delete volume
       tags: []
@@ -995,6 +1001,8 @@ paths:
                   type: integer
                   minimum: 1
                   maximum: 30
+      security:
+        - Authorization: []
   '/nodes/{node}/qemu/{vmid}':
     parameters:
       - schema:
@@ -1025,6 +1033,8 @@ paths:
                       type: string
       operationId: get-vm-operations
       description: List the endpoints available to perform operations on this vm
+      security:
+        - Authorization: []
     delete:
       summary: Destroy VM
       tags: []
@@ -1050,6 +1060,8 @@ paths:
                   type: boolean
                 skiplock:
                   type: boolean
+      security:
+        - Authorization: []
   /cluster/nextid:
     get:
       summary: Get next free VM Id
@@ -1097,6 +1109,134 @@ paths:
             minimum: 1
           in: query
           name: vmid
+      security:
+        - Authorization: []
+  '/nodes/{node}/disks/zfs':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List Zpools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - health: ONLINE
+                        free: 2053574369280
+                        alloc: 935722868736
+                        size: 2989297238016
+                        name: spool
+                        frag: 42
+                        dedup: 1
+                      - frag: 24
+                        name: tank1
+                        dedup: 1
+                        size: 59923383713792
+                        alloc: 53005751697408
+                        free: 6917632016384
+                        health: ONLINE
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        health:
+                          type: string
+                          minLength: 1
+                        free:
+                          type: integer
+                        alloc:
+                          type: integer
+                        size:
+                          type: integer
+                        name:
+                          type: string
+                          minLength: 1
+                        frag:
+                          type: integer
+                        dedup:
+                          type: number
+                      required:
+                        - health
+                        - free
+                        - alloc
+                        - size
+                        - name
+                        - frag
+                        - dedup
+                required:
+                  - data
+      operationId: get-zpools
+      description: List Zpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create Zpool
+      tags: []
+      operationId: post-zpool
+      responses:
+        '200':
+          description: OK
+      description: Create a ZFS pool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                devices:
+                  type: string
+                name:
+                  type: string
+                raidlevel:
+                  type: string
+                  enum:
+                    - single
+                    - mirror
+                    - raid10
+                    - raidz
+                    - raidz2
+                    - raidz3
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the zpool
+                ashift:
+                  type: integer
+                  minimum: 9
+                  maximum: 16
+                  default: 12
+                  description: Pool sector size exponent
+                compression:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - gzip
+                    - lz4
+                    - lzjb
+                    - zle
+                  default: 'on'
+              required:
+                - devices
+                - name
+                - raidlevel
 components:
   schemas:
     StorageType:
