@@ -1543,6 +1543,251 @@ paths:
                   default: false
                   description: Configure storage using the thinpool
         description: ''
+  '/nodes/{node}/ceph/pools':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List CEPH Pools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - pg_num
+                        - pg_autoscale_mode
+                        - bytes_used
+                        - pool
+                        - size
+                        - pg_num_min
+                        - percent_used
+                        - pg_num_final
+                        - pool_name
+                        - crush_rule
+                        - crush_rule_name
+                        - min_size
+                      properties:
+                        target_size: {}
+                        pg_num:
+                          type: number
+                        target_size_ratio: {}
+                        pg_autoscale_mode:
+                          type: string
+                          minLength: 1
+                        bytes_used:
+                          type: number
+                        pool:
+                          type: string
+                          minLength: 1
+                        size:
+                          type: number
+                        pg_num_min:
+                          type: number
+                        percent_used:
+                          type: number
+                        pg_num_final:
+                          type: number
+                        pool_name:
+                          type: string
+                          minLength: 1
+                        crush_rule:
+                          type: string
+                          minLength: 1
+                        autoscale_status:
+                          type: object
+                          properties:
+                            subtree_capacity:
+                              type: number
+                            target_bytes:
+                              type: number
+                            target_ratio:
+                              type: number
+                            effective_target_ratio:
+                              type: number
+                            bias:
+                              type: number
+                            pool_id:
+                              type: number
+                            raw_used:
+                              type: number
+                            would_adjust:
+                              type: boolean
+                            pg_num_ideal:
+                              type: number
+                            pg_num_final:
+                              type: number
+                            pool_name:
+                              type: string
+                              minLength: 1
+                            crush_root_id:
+                              type: number
+                            pg_autoscale_mode:
+                              type: string
+                              minLength: 1
+                            capacity_ratio:
+                              type: number
+                            actual_raw_used:
+                              type: number
+                            actual_capacity_ratio:
+                              type: number
+                            raw_used_rate:
+                              type: number
+                            logical_used:
+                              type: number
+                            pg_num_target:
+                              type: number
+                          required:
+                            - subtree_capacity
+                            - target_bytes
+                            - target_ratio
+                            - effective_target_ratio
+                            - bias
+                            - pool_id
+                            - raw_used
+                            - would_adjust
+                            - pg_num_ideal
+                            - pg_num_final
+                            - pool_name
+                            - crush_root_id
+                            - pg_autoscale_mode
+                            - capacity_ratio
+                            - actual_raw_used
+                            - actual_capacity_ratio
+                            - raw_used_rate
+                            - logical_used
+                            - pg_num_target
+                        crush_rule_name:
+                          type: string
+                          minLength: 1
+                        min_size:
+                          type: number
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - target_size: null
+                        pg_num: 256
+                        target_size_ratio: null
+                        pg_autoscale_mode: 'on'
+                        bytes_used: 387336
+                        pool: '1'
+                        size: 3
+                        pg_num_min: 1
+                        percent_used: 6.34190921999789e-9
+                        pg_num_final: 256
+                        pool_name: device_health_metrics
+                        crush_rule: '0'
+                        autoscale_status:
+                          subtree_capacity: 64295161298944
+                          target_bytes: 0
+                          target_ratio: 0
+                          effective_target_ratio: 0
+                          bias: 1
+                          pool_id: 1
+                          raw_used: 1162008
+                          would_adjust: false
+                          pg_num_ideal: 300
+                          pg_num_final: 256
+                          pool_name: device_health_metrics
+                          crush_root_id: -1
+                          pg_autoscale_mode: 'on'
+                          capacity_ratio: 1.8073024105145e-8
+                          actual_raw_used: 1162008
+                          actual_capacity_ratio: 1.8073024105145e-8
+                          raw_used_rate: 3
+                          logical_used: 387336
+                          pg_num_target: 256
+                        crush_rule_name: replicated_rule
+                        min_size: 2
+      operationId: get-ceph-pools
+      description: List all pools
+      security:
+        - Authorization: []
+    post:
+      summary: Create a CEPH Pool
+      tags: []
+      operationId: post-nodes-node-ceph-pools
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Create POOL
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                add_storages:
+                  type: boolean
+                  description: Configure VM and CT storage using the new pool
+                application:
+                  type: string
+                  enum:
+                    - rbd
+                    - cephfs
+                    - rgw
+                  default: rbd
+                crush_rule:
+                  type: string
+                min_size:
+                  type: integer
+                  default: 2
+                  minimum: 1
+                  maximum: 7
+                pg_autoscale_mode:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - warn
+                  default: warn
+                pg_num:
+                  type: integer
+                  default: 128
+                  minimum: 1
+                  maximum: 32768
+                pg_num_min:
+                  type: integer
+                  maximum: 32768
+                size:
+                  type: integer
+                  default: 3
+                  minimum: 1
+                  maximum: 7
+                target_size:
+                  type: string
+                target_size_ratio:
+                  type: number
+              required:
+                - name
 components:
   schemas:
     StorageType:
