@@ -1513,6 +1513,7 @@ paths:
         - Authorization: []
     post:
       summary: Create an LVM Thin Pool
+      tags: []
       operationId: post-nodes-node-disks-lvmthin
       responses:
         '200':
