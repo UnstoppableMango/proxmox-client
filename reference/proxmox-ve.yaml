@@ -1788,6 +1788,230 @@ paths:
                   type: number
               required:
                 - name
+  '/nodes/{node}/ceph/pools/{name}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: name
+        in: path
+        required: true
+    get:
+      summary: List Pool Settings
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      name: device_health_metrics
+                      target_size: null
+                      hashpspool: '1'
+                      noscrub: '0'
+                      size: 3
+                      use_gmt_hitset: '1'
+                      pg_num: 256
+                      nodelete: '0'
+                      pg_autoscale_mode: 'on'
+                      nopgchange: '0'
+                      target_size_ratio: null
+                      fast_read: '0'
+                      nodeep-scrub: '0'
+                      crush_rule: replicated_rule
+                      write_fadvise_dontneed: '0'
+                      id: 1
+                      pg_num_min: 1
+                      min_size: 2
+                      pgp_num: 1
+                      nosizechange: '0'
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - name
+                      - hashpspool
+                      - noscrub
+                      - use_gmt_hitset
+                      - nodelete
+                      - nopgchange
+                      - fast_read
+                      - nodeep-scrub
+                      - write_fadvise_dontneed
+                      - id
+                      - pgp_num
+                      - nosizechange
+                    properties:
+                      name:
+                        type: string
+                        minLength: 1
+                      target_size:
+                        type: string
+                      hashpspool:
+                        type: string
+                        minLength: 1
+                      noscrub:
+                        type: string
+                        minLength: 1
+                      size:
+                        type: number
+                      use_gmt_hitset:
+                        type: string
+                        minLength: 1
+                      pg_num:
+                        type: number
+                      nodelete:
+                        type: string
+                        minLength: 1
+                      pg_autoscale_mode:
+                        type: string
+                        minLength: 1
+                      nopgchange:
+                        type: string
+                        minLength: 1
+                      target_size_ratio:
+                        type: number
+                      fast_read:
+                        type: string
+                        minLength: 1
+                      nodeep-scrub:
+                        type: string
+                        minLength: 1
+                      crush_rule:
+                        type: string
+                        minLength: 1
+                      write_fadvise_dontneed:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: number
+                      pg_num_min:
+                        type: number
+                      min_size:
+                        type: number
+                      pgp_num:
+                        type: number
+                      nosizechange:
+                        type: string
+                        minLength: 1
+                      application:
+                        type: string
+                      application_list:
+                        type: string
+                      autoscale_status:
+                        type: string
+                      statistics:
+                        type: object
+                required:
+                  - data
+      operationId: get-ceph-pool-settings
+      description: List pool settings
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                verbose:
+                  type: boolean
+                  default: false
+    put:
+      summary: Change Pool Settings
+      operationId: put-ceph-pool-settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Change POOL settings
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                application:
+                  type: string
+                  enum:
+                    - rbd
+                    - cephfs
+                    - rgw
+                crush_rule:
+                  type: string
+                min_size:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                pg_autoscale_mode:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - warn
+                pg_num:
+                  type: integer
+                  minimum: 1
+                  maximum: 32768
+                pg_num_min:
+                  type: integer
+                  example: 0
+                  maximum: 32768
+                size:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                target_size:
+                  type: string
+                target_size_ratio:
+                  type: number
+    delete:
+      summary: Destroy Pool
+      operationId: delete-ceph-pool
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Destroy pool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  default: false
+                remove_storage:
+                  type: boolean
+                  default: false
 components:
   schemas:
     StorageType:
