@@ -1928,6 +1928,7 @@ paths:
                   default: false
     put:
       summary: Change Pool Settings
+      tags: []
       operationId: put-ceph-pool-settings
       responses:
         '200':
@@ -1986,6 +1987,7 @@ paths:
                   type: number
     delete:
       summary: Destroy Pool
+      tags: []
       operationId: delete-ceph-pool
       responses:
         '200':
