@@ -57,7 +57,7 @@ paths:
     get:
       summary: Storage index
       tags: []
-      operationId: get-storage
+      operationId: list-storage
       description: Storage index
       responses:
         '200':
@@ -2121,6 +2121,222 @@ paths:
                 remove_storage:
                   type: boolean
                   default: false
+  '/storage/{storage}':
+    parameters:
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    get:
+      summary: Get Storage Configuration
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      shared:
+                        type: number
+                      server:
+                        type: string
+                        minLength: 1
+                      export:
+                        type: string
+                        minLength: 1
+                      path:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      content:
+                        type: string
+                        minLength: 1
+                      digest:
+                        type: string
+                        minLength: 1
+                      storage:
+                        type: string
+                        minLength: 1
+                    required:
+                      - shared
+                      - server
+                      - export
+                      - path
+                      - type
+                      - content
+                      - digest
+                      - storage
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      shared: 1
+                      server: zeus
+                      export: /tank1/media/isos
+                      path: /mnt/pve/isos
+                      type: nfs
+                      content: 'iso,vztmpl'
+                      digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                      storage: isos
+      operationId: get-storage
+      description: Read storage configuration
+      security:
+        - Authorization: []
+    put:
+      summary: Update Storage Configuration
+      tags: []
+      operationId: put-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      storage:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/StorageType'
+                      config:
+                        type: object
+      description: Update storage configuration
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                blocksize:
+                  type: string
+                bwlimit:
+                  type: string
+                comstart_hg:
+                  type: string
+                comstar_tg:
+                  type: string
+                content:
+                  type: string
+                delete:
+                  type: string
+                digest:
+                  type: string
+                disable:
+                  type: boolean
+                domain:
+                  type: string
+                encryption-key:
+                  type: string
+                fingerprint:
+                  type: string
+                format:
+                  type: string
+                fuse:
+                  type: boolean
+                is_mountpoint:
+                  type: string
+                  enum:
+                    - 'yes'
+                    - 'no'
+                krbd:
+                  type: boolean
+                lio_tpg:
+                  type: string
+                master-pubkey:
+                  type: string
+                maxfiles:
+                  type: integer
+                  minimum: 0
+                mkdir:
+                  type: boolean
+                  default: true
+                monhost:
+                  type: string
+                mountpoint:
+                  type: string
+                namespace:
+                  type: string
+                nocow:
+                  type: boolean
+                  default: false
+                nodes:
+                  type: string
+                nowritecache:
+                  type: boolean
+                options:
+                  type: string
+                password:
+                  type: string
+                pool:
+                  type: string
+                port:
+                  type: integer
+                  default: 8007
+                  minimum: 1
+                  maximum: 65535
+                prune-backups:
+                  type: string
+                saferemove:
+                  type: boolean
+                saferemove_throughput:
+                  type: string
+                server:
+                  type: string
+                server2:
+                  type: string
+                shared:
+                  type: boolean
+                smbversion:
+                  type: string
+                  enum:
+                    - '2.0'
+                    - '2.1'
+                    - '3.0'
+                sparse:
+                  type: boolean
+                subdir:
+                  type: string
+                tagged_only:
+                  type: boolean
+                transport:
+                  type: string
+                  enum:
+                    - tcp
+                    - rdma
+                    - unix
+                username:
+                  type: string
+    delete:
+      summary: Delete Storage Configuration
+      tags: []
+      operationId: delete-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      description: Delete storage configuration
+      security:
+        - Authorization: []
 components:
   schemas:
     StorageType:
