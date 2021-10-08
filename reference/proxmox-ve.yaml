@@ -1191,6 +1191,13 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
       description: Create a ZFS pool
       security:
         - Authorization: []
@@ -1237,6 +1244,205 @@ paths:
                 - devices
                 - name
                 - raidlevel
+  '/nodes/{node}/disks/directory':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: Get directory storages
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device:
+                          type: string
+                        options:
+                          type: string
+                        path:
+                          type: string
+                        type:
+                          type: string
+                        unitfile:
+                          type: string
+      operationId: get-directories
+      description: PVE Managed Directory storages.
+      security:
+        - Authorization: []
+    post:
+      summary: Create Directory
+      tags: []
+      operationId: post-directory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the directory
+                filesystem:
+                  type: string
+                  enum:
+                    - ext4
+                    - xfs
+                  description: The desired filesystem
+  '/nodes/{node}/disks/lvm':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Volume Groups
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      children:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          required:
+                            - free
+                            - size
+                            - lvcount
+                            - leaf
+                            - name
+                          properties:
+                            free:
+                              type: number
+                            size:
+                              type: number
+                            lvcount:
+                              type: number
+                            leaf:
+                              type: number
+                            name:
+                              type: string
+                              minLength: 1
+                            children:
+                              type: array
+                              uniqueItems: true
+                              minItems: 1
+                              items:
+                                required:
+                                  - name
+                                  - leaf
+                                  - free
+                                  - size
+                                properties:
+                                  name:
+                                    type: string
+                                    minLength: 1
+                                  leaf:
+                                    type: number
+                                  free:
+                                    type: number
+                                  size:
+                                    type: number
+                      leaf:
+                        type: number
+                    required:
+                      - children
+                      - leaf
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      children:
+                        - free: 17179869184
+                          size: 249519144960
+                          lvcount: 9
+                          leaf: 0
+                          name: pve
+                          children:
+                            - name: /dev/sdi3
+                              leaf: 1
+                              free: 17179869184
+                              size: 249519144960
+                      leaf: 0
+      operationId: get-lvm-groups
+      description: List LVM Volume Groups
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Volume Group
+      operationId: post-lvm-group
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Create an LVM Volume group
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+              required:
+                - device
+                - name
 components:
   schemas:
     StorageType:
