@@ -42,9 +42,102 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - sparse
+                        - content
+                        - mountpoint
+                        - pool
+                        - digest
+                        - storage
+                        - nodes
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        sparse:
+                          type: number
+                        content:
+                          type: string
+                          minLength: 1
+                        mountpoint:
+                          type: string
+                          minLength: 1
+                        pool:
+                          type: string
+                          minLength: 1
+                        digest:
+                          type: string
+                          minLength: 1
+                        storage:
+                          type: string
+                          minLength: 1
+                        nodes:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - type: zfspool
+                        sparse: 0
+                        content: 'rootdir,images'
+                        mountpoint: /tank1/vm-data/limited
+                        pool: tank1/vm-data/limited
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-vm-data-limited
+                        nodes: 'zeus,apollo'
+                      - content: 'images,rootdir'
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        type: lvmthin
+                        vgname: pve
+                        thinpool: data
+                        storage: local-lvm
+                      - server: zeus
+                        type: nfs
+                        content: 'iso,vztmpl'
+                        storage: isos
+                        path: /mnt/pve/isos
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        shared: 1
+                        export: /tank1/media/isos
+                      - type: dir
+                        content: backup
+                        shared: 0
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-backup
+                        prune-backups: keep-last=1
+                        path: /tank1/backup
+                        nodes: 'zeus,apollo'
+                      - digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: spool
+                        type: zfspool
+                        sparse: 1
+                        content: 'rootdir,images'
+                        pool: spool
+                        mountpoint: /spool
+                      - path: /var/lib/vz
+                        storage: local
+                        content: 'vztmpl,backup,iso'
+                        type: dir
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                      - mountpoint: /tank1/vm-data
+                        pool: tank1/vm-data
+                        content: 'images,rootdir'
+                        sparse: 0
+                        type: zfspool
+                        nodes: 'zeus,apollo'
+                        storage: zfs-vm-data
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
       parameters:
         - schema:
             type: string
