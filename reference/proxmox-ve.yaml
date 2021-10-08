@@ -2337,6 +2337,262 @@ paths:
       description: Delete storage configuration
       security:
         - Authorization: []
+  /cluster/replication:
+    get:
+      summary: List Replication Jobs
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - jobnum
+                        - source
+                        - id
+                        - type
+                        - target
+                        - guest
+                      properties:
+                        jobnum:
+                          type: string
+                          minLength: 1
+                        source:
+                          type: string
+                          minLength: 1
+                        id:
+                          type: string
+                          minLength: 1
+                        type:
+                          type: string
+                          minLength: 1
+                        target:
+                          type: string
+                          minLength: 1
+                        guest:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - jobnum: '0'
+                        source: zeus
+                        id: 101-0
+                        type: local
+                        target: herra
+                        guest: '101'
+                      - id: 110-0
+                        target: herra
+                        type: local
+                        source: zeus
+                        jobnum: '0'
+                        guest: '110'
+                      - guest: '114'
+                        target: herra
+                        type: local
+                        id: 114-0
+                        source: zeus
+                        jobnum: '0'
+      operationId: list-replication
+      description: List replication jobs
+      security:
+        - Authorization: []
+    post:
+      summary: Create Replication Job
+      tags: []
+      operationId: post-replication
+      responses:
+        '200':
+          description: OK
+      description: Create a new replication job
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: 'Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. ''<GUEST>-<JOBNUM>''.'
+                target:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - local
+                comment:
+                  type: string
+                disable:
+                  type: boolean
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
+                  type: string
+                  enum:
+                    - local
+                    - full
+                schedule:
+                  type: string
+                  default: '*/15'
+                source:
+                  type: string
+              required:
+                - id
+                - target
+                - type
+  '/cluster/replication/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get Replication Job Configuration
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      jobnum:
+                        type: string
+                        minLength: 1
+                      digest:
+                        type: string
+                        minLength: 1
+                      source:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      target:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: string
+                        minLength: 1
+                      guest:
+                        type: string
+                        minLength: 1
+                    required:
+                      - jobnum
+                      - digest
+                      - source
+                      - type
+                      - target
+                      - id
+                      - guest
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      jobnum: '0'
+                      digest: cf4b401a358cc3da20b7ddfffbed4b71fbcf8b65
+                      source: zeus
+                      type: local
+                      target: herra
+                      id: 101-0
+                      guest: '101'
+      operationId: get-replication
+      description: Read replication job configuration
+      security:
+        - Authorization: []
+    put:
+      summary: Update Replication Job Configuration
+      tags: []
+      operationId: put-replication
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      security:
+        - Authorization: []
+      description: Update replication job configuration
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                delete:
+                  type: string
+                digest:
+                  type: string
+                disable:
+                  type: boolean
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
+                  type: string
+                  enum:
+                    - local
+                    - full
+                schedule:
+                  type: string
+                  default: '*/15'
+                soruce:
+                  type: string
+        description: ''
+    delete:
+      summary: Delete Replication Job
+      tags: []
+      operationId: delete-replication
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      description: Mark replication job for removal
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  default: false
+                keep:
+                  type: boolean
+                  default: false
 components:
   schemas:
     StorageType:
