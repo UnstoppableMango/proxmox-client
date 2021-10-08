@@ -1411,6 +1411,7 @@ paths:
         - Authorization: []
     post:
       summary: Create an LVM Volume Group
+      tags: []
       operationId: post-lvm-group
       responses:
         '200':
@@ -1443,6 +1444,104 @@ paths:
               required:
                 - device
                 - name
+  '/nodes/{node}/disks/lvmthin':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Thin Pools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - lv: data
+                        metadata_size: 1614807040
+                        lv_type: t
+                        used: 15824270
+                        metadata_used: 17601396
+                        lv_size: 158242701312
+                        ctime: '1598546904'
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        lv:
+                          type: string
+                          minLength: 1
+                        metadata_size:
+                          type: integer
+                        lv_type:
+                          type: string
+                          minLength: 1
+                        used:
+                          type: integer
+                        metadata_used:
+                          type: integer
+                        lv_size:
+                          type: integer
+                        ctime:
+                          type: string
+                          minLength: 1
+                      required:
+                        - lv
+                        - metadata_size
+                        - lv_type
+                        - used
+                        - metadata_used
+                        - lv_size
+                        - ctime
+                required:
+                  - data
+      operationId: get-nlvmthin-pools
+      description: List LVM thinpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Thin Pool
+      operationId: post-nodes-node-disks-lvmthin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create an LVM thinpool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the thinpool
+        description: ''
 components:
   schemas:
     StorageType:
