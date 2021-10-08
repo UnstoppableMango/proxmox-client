@@ -197,15 +197,18 @@ paths:
                 title: CreateStorageRequest
                 type: object
                 properties:
-                  storage:
-                    type: string
-                  type:
-                    $ref: '#/components/schemas/StorageType'
-                  config:
+                  data:
                     type: object
-                required:
-                  - storage
-                  - type
+                    properties:
+                      storage:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/StorageType'
+                      config:
+                        type: object
+                    required:
+                      - storage
+                      - type
       description: Create a new storage
       requestBody:
         content:
@@ -245,6 +248,110 @@ paths:
                 datastore:
                   type: string
                   description: Proxmox Backup Server datastore name
+                disable:
+                  type: boolean
+                domain:
+                  type: string
+                encryption-key:
+                  type: string
+                export:
+                  type: string
+                fingerprint:
+                  type: string
+                format:
+                  type: string
+                fuse:
+                  type: string
+                is_mountpoint:
+                  type: string
+                  enum:
+                    - 'yes'
+                    - 'no'
+                  default: 'no'
+                iscsiprovider:
+                  type: string
+                krbd:
+                  type: boolean
+                lio_tpg:
+                  type: string
+                master-pubkey:
+                  type: string
+                maxfiles:
+                  type: integer
+                  minimum: 0
+                mkdir:
+                  type: boolean
+                  default: true
+                monhost:
+                  type: string
+                mountpoint:
+                  type: string
+                namespace:
+                  type: string
+                nocow:
+                  type: boolean
+                  default: false
+                nodes:
+                  type: string
+                nowritecache:
+                  type: boolean
+                options:
+                  type: string
+                password:
+                  type: string
+                path:
+                  type: string
+                pool:
+                  type: string
+                port:
+                  type: integer
+                  default: 8007
+                  minimum: 1
+                  maximum: 65535
+                portal:
+                  type: string
+                prune-backups:
+                  type: string
+                saferemove:
+                  type: boolean
+                saferemove_throughput:
+                  type: string
+                server:
+                  type: string
+                server2:
+                  type: string
+                share:
+                  type: string
+                shared:
+                  type: boolean
+                smbversion:
+                  type: string
+                  enum:
+                    - '2.0'
+                    - '2.1'
+                    - '3.0'
+                sparse:
+                  type: boolean
+                subdir:
+                  type: string
+                tagged_only:
+                  type: boolean
+                target:
+                  type: string
+                thinpool:
+                  type: string
+                transport:
+                  type: string
+                  enum:
+                    - tcp
+                    - rdma
+                    - unix
+                username:
+                  type: string
+                vgname:
+                  type: string
+                volume:
+                  type: string
               required:
                 - storage
                 - type
