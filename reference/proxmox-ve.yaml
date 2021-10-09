@@ -2623,21 +2623,70 @@ paths:
           content:
             application/json:
               schema:
+                description: ''
                 type: object
                 properties:
                   data:
                     type: object
                     properties:
-                      pid:
+                      node:
                         type: string
+                        minLength: 1
                       status:
                         type: string
-                        enum:
-                          - running
-                          - stopped
+                        minLength: 1
+                      exitstatus:
+                        type: string
+                        minLength: 1
+                      tokenid:
+                        type: string
+                        minLength: 1
+                      upid:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: string
+                        minLength: 1
+                      starttime:
+                        type: number
+                      pid:
+                        type: number
+                      user:
+                        type: string
+                        minLength: 1
+                      pstart:
+                        type: number
                     required:
-                      - pid
+                      - node
                       - status
+                      - exitstatus
+                      - tokenid
+                      - upid
+                      - type
+                      - id
+                      - starttime
+                      - pid
+                      - user
+                      - pstart
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      node: zeus
+                      status: stopped
+                      exitstatus: OK
+                      tokenid: pulumi-dev
+                      upid: 'UPID:zeus:001F6417:02CFF9DA:61611FDB:download:k3os-amd64-dev.iso:root@pam!pulumi-dev:'
+                      type: download
+                      id: k3os-amd64-dev.iso
+                      starttime: 1633755099
+                      pid: 2057239
+                      user: root@pam
+                      pstart: 47184346
       operationId: get-node-task-status
       description: Read task status
       security:
