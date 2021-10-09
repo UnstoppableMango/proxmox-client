@@ -2602,6 +2602,46 @@ paths:
                 keep:
                   type: boolean
                   default: false
+  '/nodes/{node}/tasks/{upid}/status':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: upid
+        in: path
+        required: true
+    get:
+      summary: Read Task Status
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      pid:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                          - running
+                          - stopped
+                    required:
+                      - pid
+                      - status
+      operationId: get-node-task-status
+      description: Read task status
+      security:
+        - Authorization: []
 components:
   schemas:
     StorageType:
