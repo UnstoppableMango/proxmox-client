@@ -438,6 +438,15 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
       requestBody:
         content:
           application/x-www-form-urlencoded:
