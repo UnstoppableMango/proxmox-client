@@ -9,354 +9,6 @@ servers:
   - url: 'https://localhost:8006/api2/json'
     description: ''
 paths:
-  /version:
-    get:
-      summary: API version details
-      tags: []
-      operationId: get-version
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      repoid:
-                        type: string
-                        minLength: 1
-                      version:
-                        type: string
-                        minLength: 1
-                      keyboard:
-                        type: string
-                        minLength: 1
-                      release:
-                        type: string
-                        minLength: 1
-                    required:
-                      - repoid
-                      - version
-                      - keyboard
-                      - release
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      repoid: 63d82f4e
-                      version: 7.0-11
-                      keyboard: en-us
-                      release: '7.0'
-      description: API version details. The result also includes the global datacenter confguration.
-  /storage:
-    get:
-      summary: Storage index
-      tags: []
-      operationId: list-storage
-      description: Storage index
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      required:
-                        - type
-                        - sparse
-                        - content
-                        - mountpoint
-                        - pool
-                        - digest
-                        - storage
-                        - nodes
-                      properties:
-                        type:
-                          type: string
-                          minLength: 1
-                        sparse:
-                          type: number
-                        content:
-                          type: string
-                          minLength: 1
-                        mountpoint:
-                          type: string
-                          minLength: 1
-                        pool:
-                          type: string
-                          minLength: 1
-                        digest:
-                          type: string
-                          minLength: 1
-                        storage:
-                          type: string
-                          minLength: 1
-                        nodes:
-                          type: string
-                          minLength: 1
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      - type: zfspool
-                        sparse: 0
-                        content: 'rootdir,images'
-                        mountpoint: /tank1/vm-data/limited
-                        pool: tank1/vm-data/limited
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: zfs-vm-data-limited
-                        nodes: 'zeus,apollo'
-                      - content: 'images,rootdir'
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        type: lvmthin
-                        vgname: pve
-                        thinpool: data
-                        storage: local-lvm
-                      - server: zeus
-                        type: nfs
-                        content: 'iso,vztmpl'
-                        storage: isos
-                        path: /mnt/pve/isos
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        shared: 1
-                        export: /tank1/media/isos
-                      - type: dir
-                        content: backup
-                        shared: 0
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: zfs-backup
-                        prune-backups: keep-last=1
-                        path: /tank1/backup
-                        nodes: 'zeus,apollo'
-                      - digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: spool
-                        type: zfspool
-                        sparse: 1
-                        content: 'rootdir,images'
-                        pool: spool
-                        mountpoint: /spool
-                      - path: /var/lib/vz
-                        storage: local
-                        content: 'vztmpl,backup,iso'
-                        type: dir
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                      - mountpoint: /tank1/vm-data
-                        pool: tank1/vm-data
-                        content: 'images,rootdir'
-                        sparse: 0
-                        type: zfspool
-                        nodes: 'zeus,apollo'
-                        storage: zfs-vm-data
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-      parameters:
-        - schema:
-            type: string
-            enum:
-              - btrfs
-              - cephfs
-              - cifs
-              - dir
-              - glusterfs
-              - iscsi
-              - iscsidirect
-              - lvm
-              - lvmthin
-              - nfs
-              - pbs
-              - rbd
-              - zfs
-              - zfspool
-          in: query
-          name: type
-          description: Only list storage of a specfic type
-      security:
-        - Authorization: []
-    post:
-      summary: Create Storage
-      tags: []
-      operationId: post-storage
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                title: CreateStorageRequest
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      storage:
-                        type: string
-                      type:
-                        $ref: '#/components/schemas/StorageType'
-                      config:
-                        type: object
-                    required:
-                      - storage
-                      - type
-      description: Create a new storage
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              title: CreateStorageRequest
-              type: object
-              properties:
-                storage:
-                  type: string
-                  description: The storage identifier
-                type:
-                  $ref: '#/components/schemas/StorageType'
-                authsupported:
-                  type: string
-                  description: Is auth supported
-                base:
-                  type: string
-                  description: Base volume. This volume is automatically activated
-                blocksize:
-                  type: string
-                  description: Block size
-                bwlimit:
-                  type: string
-                  description: Set bandwidth/io limit for various operations
-                comstar_hg:
-                  type: string
-                  description: Host group for comstar views
-                comstart_tg:
-                  type: string
-                  description: Target group for comstar views
-                content:
-                  type: string
-                  description: |-
-                    Allowed content types.
-                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
-                datastore:
-                  type: string
-                  description: Proxmox Backup Server datastore name
-                disable:
-                  type: boolean
-                domain:
-                  type: string
-                encryption-key:
-                  type: string
-                export:
-                  type: string
-                fingerprint:
-                  type: string
-                format:
-                  type: string
-                fuse:
-                  type: string
-                is_mountpoint:
-                  type: string
-                  enum:
-                    - 'yes'
-                    - 'no'
-                  default: 'no'
-                iscsiprovider:
-                  type: string
-                krbd:
-                  type: boolean
-                lio_tpg:
-                  type: string
-                master-pubkey:
-                  type: string
-                maxfiles:
-                  type: integer
-                  minimum: 0
-                mkdir:
-                  type: boolean
-                  default: true
-                monhost:
-                  type: string
-                mountpoint:
-                  type: string
-                namespace:
-                  type: string
-                nocow:
-                  type: boolean
-                  default: false
-                nodes:
-                  type: string
-                nowritecache:
-                  type: boolean
-                options:
-                  type: string
-                password:
-                  type: string
-                path:
-                  type: string
-                pool:
-                  type: string
-                port:
-                  type: integer
-                  default: 8007
-                  minimum: 1
-                  maximum: 65535
-                portal:
-                  type: string
-                prune-backups:
-                  type: string
-                saferemove:
-                  type: boolean
-                saferemove_throughput:
-                  type: string
-                server:
-                  type: string
-                server2:
-                  type: string
-                share:
-                  type: string
-                shared:
-                  type: boolean
-                smbversion:
-                  type: string
-                  enum:
-                    - '2.0'
-                    - '2.1'
-                    - '3.0'
-                sparse:
-                  type: boolean
-                subdir:
-                  type: string
-                tagged_only:
-                  type: boolean
-                target:
-                  type: string
-                thinpool:
-                  type: string
-                transport:
-                  type: string
-                  enum:
-                    - tcp
-                    - rdma
-                    - unix
-                username:
-                  type: string
-                vgname:
-                  type: string
-                volume:
-                  type: string
-              required:
-                - storage
-                - type
-      security:
-        - Authorization: []
   /access/ticket:
     get:
       summary: Get Ticket
@@ -419,22 +71,490 @@ paths:
                 - username
                 - password
         description: ''
-  '/nodes/{node}/storage/{storage}/download-url':
+  /cluster/nextid:
+    get:
+      summary: Get next free VM Id
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: integer
+                required:
+                  - data
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      vmid:
+                        type: string
+                    required:
+                      - vmid
+                  data: {}
+                required:
+                  - error
+                x-examples:
+                  example-1:
+                    error:
+                      vmid: ''
+                    data: null
+      operationId: get-cluster-nextid
+      description: Get the next free VM ID. If you pass a VM ID it will raise an error if the ID is already used.
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+          in: query
+          name: vmid
+      security:
+        - Authorization: []
+  /cluster/replication:
+    get:
+      summary: List Replication Jobs
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - jobnum
+                        - source
+                        - id
+                        - type
+                        - target
+                        - guest
+                      properties:
+                        jobnum:
+                          type: string
+                          minLength: 1
+                        source:
+                          type: string
+                          minLength: 1
+                        id:
+                          type: string
+                          minLength: 1
+                        type:
+                          type: string
+                          minLength: 1
+                        target:
+                          type: string
+                          minLength: 1
+                        guest:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - jobnum: '0'
+                        source: zeus
+                        id: 101-0
+                        type: local
+                        target: herra
+                        guest: '101'
+                      - id: 110-0
+                        target: herra
+                        type: local
+                        source: zeus
+                        jobnum: '0'
+                        guest: '110'
+                      - guest: '114'
+                        target: herra
+                        type: local
+                        id: 114-0
+                        source: zeus
+                        jobnum: '0'
+      operationId: list-replication
+      description: List replication jobs
+      security:
+        - Authorization: []
+    post:
+      summary: Create Replication Job
+      tags: []
+      operationId: post-replication
+      responses:
+        '200':
+          description: OK
+      description: Create a new replication job
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: 'Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. ''<GUEST>-<JOBNUM>''.'
+                target:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - local
+                comment:
+                  type: string
+                disable:
+                  type: boolean
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
+                  type: string
+                  enum:
+                    - local
+                    - full
+                schedule:
+                  type: string
+                  default: '*/15'
+                source:
+                  type: string
+              required:
+                - id
+                - target
+                - type
+  '/cluster/replication/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Get Replication Job Configuration
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      jobnum:
+                        type: string
+                        minLength: 1
+                      digest:
+                        type: string
+                        minLength: 1
+                      source:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      target:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: string
+                        minLength: 1
+                      guest:
+                        type: string
+                        minLength: 1
+                    required:
+                      - jobnum
+                      - digest
+                      - source
+                      - type
+                      - target
+                      - id
+                      - guest
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      jobnum: '0'
+                      digest: cf4b401a358cc3da20b7ddfffbed4b71fbcf8b65
+                      source: zeus
+                      type: local
+                      target: herra
+                      id: 101-0
+                      guest: '101'
+      operationId: get-replication
+      description: Read replication job configuration
+      security:
+        - Authorization: []
+    put:
+      summary: Update Replication Job Configuration
+      tags: []
+      operationId: put-replication
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      security:
+        - Authorization: []
+      description: Update replication job configuration
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                delete:
+                  type: string
+                digest:
+                  type: string
+                disable:
+                  type: boolean
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
+                  type: string
+                  enum:
+                    - local
+                    - full
+                schedule:
+                  type: string
+                  default: '*/15'
+                soruce:
+                  type: string
+        description: ''
+    delete:
+      summary: Delete Replication Job
+      tags: []
+      operationId: delete-replication
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      description: Mark replication job for removal
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  default: false
+                keep:
+                  type: boolean
+                  default: false
+  '/nodes/{node}/ceph/pools':
     parameters:
       - schema:
           type: string
         name: node
         in: path
         required: true
-      - schema:
-          type: string
-        name: storage
-        in: path
-        required: true
-    post:
-      summary: Download Url
+    get:
+      summary: List CEPH Pools
       tags: []
-      operationId: post-download-url
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - pg_num
+                        - pg_autoscale_mode
+                        - bytes_used
+                        - pool
+                        - size
+                        - pg_num_min
+                        - percent_used
+                        - pg_num_final
+                        - pool_name
+                        - crush_rule
+                        - crush_rule_name
+                        - min_size
+                      properties:
+                        target_size: {}
+                        pg_num:
+                          type: number
+                        target_size_ratio: {}
+                        pg_autoscale_mode:
+                          type: string
+                          minLength: 1
+                        bytes_used:
+                          type: number
+                        pool:
+                          type: string
+                          minLength: 1
+                        size:
+                          type: number
+                        pg_num_min:
+                          type: number
+                        percent_used:
+                          type: number
+                        pg_num_final:
+                          type: number
+                        pool_name:
+                          type: string
+                          minLength: 1
+                        crush_rule:
+                          type: string
+                          minLength: 1
+                        autoscale_status:
+                          type: object
+                          properties:
+                            subtree_capacity:
+                              type: number
+                            target_bytes:
+                              type: number
+                            target_ratio:
+                              type: number
+                            effective_target_ratio:
+                              type: number
+                            bias:
+                              type: number
+                            pool_id:
+                              type: number
+                            raw_used:
+                              type: number
+                            would_adjust:
+                              type: boolean
+                            pg_num_ideal:
+                              type: number
+                            pg_num_final:
+                              type: number
+                            pool_name:
+                              type: string
+                              minLength: 1
+                            crush_root_id:
+                              type: number
+                            pg_autoscale_mode:
+                              type: string
+                              minLength: 1
+                            capacity_ratio:
+                              type: number
+                            actual_raw_used:
+                              type: number
+                            actual_capacity_ratio:
+                              type: number
+                            raw_used_rate:
+                              type: number
+                            logical_used:
+                              type: number
+                            pg_num_target:
+                              type: number
+                          required:
+                            - subtree_capacity
+                            - target_bytes
+                            - target_ratio
+                            - effective_target_ratio
+                            - bias
+                            - pool_id
+                            - raw_used
+                            - would_adjust
+                            - pg_num_ideal
+                            - pg_num_final
+                            - pool_name
+                            - crush_root_id
+                            - pg_autoscale_mode
+                            - capacity_ratio
+                            - actual_raw_used
+                            - actual_capacity_ratio
+                            - raw_used_rate
+                            - logical_used
+                            - pg_num_target
+                        crush_rule_name:
+                          type: string
+                          minLength: 1
+                        min_size:
+                          type: number
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - target_size: null
+                        pg_num: 256
+                        target_size_ratio: null
+                        pg_autoscale_mode: 'on'
+                        bytes_used: 387336
+                        pool: '1'
+                        size: 3
+                        pg_num_min: 1
+                        percent_used: 6.34190921999789e-9
+                        pg_num_final: 256
+                        pool_name: device_health_metrics
+                        crush_rule: '0'
+                        autoscale_status:
+                          subtree_capacity: 64295161298944
+                          target_bytes: 0
+                          target_ratio: 0
+                          effective_target_ratio: 0
+                          bias: 1
+                          pool_id: 1
+                          raw_used: 1162008
+                          would_adjust: false
+                          pg_num_ideal: 300
+                          pg_num_final: 256
+                          pool_name: device_health_metrics
+                          crush_root_id: -1
+                          pg_autoscale_mode: 'on'
+                          capacity_ratio: 1.8073024105145e-8
+                          actual_raw_used: 1162008
+                          actual_capacity_ratio: 1.8073024105145e-8
+                          raw_used_rate: 3
+                          logical_used: 387336
+                          pg_num_target: 256
+                        crush_rule_name: replicated_rule
+                        min_size: 2
+      operationId: get-ceph-pools
+      description: List all pools
+      security:
+        - Authorization: []
+    post:
+      summary: Create a CEPH Pool
+      tags: []
+      operationId: post-nodes-node-ceph-pools
       responses:
         '200':
           description: OK
@@ -447,31 +567,718 @@ paths:
                     type: string
                 required:
                   - data
+      description: Create POOL
+      security:
+        - Authorization: []
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
-                content:
-                  $ref: '#/components/schemas/ContentType'
-                filename:
+                name:
                   type: string
-                url:
-                  type: string
-                checksum:
-                  type: string
-                checksum-algorithm:
-                  $ref: '#/components/schemas/ChecksumAlgorithm'
-                verify-certificates:
+                add_storages:
                   type: boolean
+                  description: Configure VM and CT storage using the new pool
+                application:
+                  type: string
+                  enum:
+                    - rbd
+                    - cephfs
+                    - rgw
+                  default: rbd
+                crush_rule:
+                  type: string
+                min_size:
+                  type: integer
+                  default: 2
+                  minimum: 1
+                  maximum: 7
+                pg_autoscale_mode:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - warn
+                  default: warn
+                pg_num:
+                  type: integer
+                  default: 128
+                  minimum: 1
+                  maximum: 32768
+                pg_num_min:
+                  type: integer
+                  maximum: 32768
+                size:
+                  type: integer
+                  default: 3
+                  minimum: 1
+                  maximum: 7
+                target_size:
+                  type: string
+                target_size_ratio:
+                  type: number
               required:
-                - content
-                - filename
-                - url
-      description: Download templates and ISO images by using an URL
+                - name
+  '/nodes/{node}/ceph/pools/{name}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: name
+        in: path
+        required: true
+    get:
+      summary: List Pool Settings
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      name: device_health_metrics
+                      target_size: null
+                      hashpspool: '1'
+                      noscrub: '0'
+                      size: 3
+                      use_gmt_hitset: '1'
+                      pg_num: 256
+                      nodelete: '0'
+                      pg_autoscale_mode: 'on'
+                      nopgchange: '0'
+                      target_size_ratio: null
+                      fast_read: '0'
+                      nodeep-scrub: '0'
+                      crush_rule: replicated_rule
+                      write_fadvise_dontneed: '0'
+                      id: 1
+                      pg_num_min: 1
+                      min_size: 2
+                      pgp_num: 1
+                      nosizechange: '0'
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - name
+                      - hashpspool
+                      - noscrub
+                      - use_gmt_hitset
+                      - nodelete
+                      - nopgchange
+                      - fast_read
+                      - nodeep-scrub
+                      - write_fadvise_dontneed
+                      - id
+                      - pgp_num
+                      - nosizechange
+                    properties:
+                      name:
+                        type: string
+                        minLength: 1
+                      target_size:
+                        type: string
+                      hashpspool:
+                        type: string
+                        minLength: 1
+                      noscrub:
+                        type: string
+                        minLength: 1
+                      size:
+                        type: number
+                      use_gmt_hitset:
+                        type: string
+                        minLength: 1
+                      pg_num:
+                        type: number
+                      nodelete:
+                        type: string
+                        minLength: 1
+                      pg_autoscale_mode:
+                        type: string
+                        minLength: 1
+                      nopgchange:
+                        type: string
+                        minLength: 1
+                      target_size_ratio:
+                        type: number
+                      fast_read:
+                        type: string
+                        minLength: 1
+                      nodeep-scrub:
+                        type: string
+                        minLength: 1
+                      crush_rule:
+                        type: string
+                        minLength: 1
+                      write_fadvise_dontneed:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: number
+                      pg_num_min:
+                        type: number
+                      min_size:
+                        type: number
+                      pgp_num:
+                        type: number
+                      nosizechange:
+                        type: string
+                        minLength: 1
+                      application:
+                        type: string
+                      application_list:
+                        type: string
+                      autoscale_status:
+                        type: string
+                      statistics:
+                        type: object
+                required:
+                  - data
+      operationId: get-ceph-pool-settings
+      description: List pool settings
       security:
         - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                verbose:
+                  type: boolean
+                  default: false
+    put:
+      summary: Change Pool Settings
+      tags: []
+      operationId: put-ceph-pool-settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Change POOL settings
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                application:
+                  type: string
+                  enum:
+                    - rbd
+                    - cephfs
+                    - rgw
+                crush_rule:
+                  type: string
+                min_size:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                pg_autoscale_mode:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - warn
+                pg_num:
+                  type: integer
+                  minimum: 1
+                  maximum: 32768
+                pg_num_min:
+                  type: integer
+                  example: 0
+                  maximum: 32768
+                size:
+                  type: integer
+                  minimum: 1
+                  maximum: 7
+                target_size:
+                  type: string
+                target_size_ratio:
+                  type: number
+    delete:
+      summary: Destroy Pool
+      tags: []
+      operationId: delete-ceph-pool
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Destroy pool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  default: false
+                remove_storage:
+                  type: boolean
+                  default: false
+  '/nodes/{node}/disks/directory':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: Get directory storages
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device:
+                          type: string
+                        options:
+                          type: string
+                        path:
+                          type: string
+                        type:
+                          type: string
+                        unitfile:
+                          type: string
+      operationId: get-directories
+      description: PVE Managed Directory storages.
+      security:
+        - Authorization: []
+    post:
+      summary: Create Directory
+      tags: []
+      operationId: post-directory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the directory
+                filesystem:
+                  type: string
+                  enum:
+                    - ext4
+                    - xfs
+                  description: The desired filesystem
+  '/nodes/{node}/disks/lvm':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Volume Groups
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      children:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          required:
+                            - free
+                            - size
+                            - lvcount
+                            - leaf
+                            - name
+                          properties:
+                            free:
+                              type: number
+                            size:
+                              type: number
+                            lvcount:
+                              type: number
+                            leaf:
+                              type: number
+                            name:
+                              type: string
+                              minLength: 1
+                            children:
+                              type: array
+                              uniqueItems: true
+                              minItems: 1
+                              items:
+                                required:
+                                  - name
+                                  - leaf
+                                  - free
+                                  - size
+                                properties:
+                                  name:
+                                    type: string
+                                    minLength: 1
+                                  leaf:
+                                    type: number
+                                  free:
+                                    type: number
+                                  size:
+                                    type: number
+                      leaf:
+                        type: number
+                    required:
+                      - children
+                      - leaf
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      children:
+                        - free: 17179869184
+                          size: 249519144960
+                          lvcount: 9
+                          leaf: 0
+                          name: pve
+                          children:
+                            - name: /dev/sdi3
+                              leaf: 1
+                              free: 17179869184
+                              size: 249519144960
+                      leaf: 0
+      operationId: get-lvm-groups
+      description: List LVM Volume Groups
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Volume Group
+      tags: []
+      operationId: post-lvm-group
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Create an LVM Volume group
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+              required:
+                - device
+                - name
+  '/nodes/{node}/disks/lvmthin':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Thin Pools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - lv: data
+                        metadata_size: 1614807040
+                        lv_type: t
+                        used: 15824270
+                        metadata_used: 17601396
+                        lv_size: 158242701312
+                        ctime: '1598546904'
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        lv:
+                          type: string
+                          minLength: 1
+                        metadata_size:
+                          type: integer
+                        lv_type:
+                          type: string
+                          minLength: 1
+                        used:
+                          type: integer
+                        metadata_used:
+                          type: integer
+                        lv_size:
+                          type: integer
+                        ctime:
+                          type: string
+                          minLength: 1
+                      required:
+                        - lv
+                        - metadata_size
+                        - lv_type
+                        - used
+                        - metadata_used
+                        - lv_size
+                        - ctime
+                required:
+                  - data
+      operationId: get-nlvmthin-pools
+      description: List LVM thinpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Thin Pool
+      tags: []
+      operationId: post-nodes-node-disks-lvmthin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create an LVM thinpool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the thinpool
+        description: ''
+  '/nodes/{node}/disks/zfs':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List Zpools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - health: ONLINE
+                        free: 2053574369280
+                        alloc: 935722868736
+                        size: 2989297238016
+                        name: spool
+                        frag: 42
+                        dedup: 1
+                      - frag: 24
+                        name: tank1
+                        dedup: 1
+                        size: 59923383713792
+                        alloc: 53005751697408
+                        free: 6917632016384
+                        health: ONLINE
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        health:
+                          type: string
+                          minLength: 1
+                        free:
+                          type: integer
+                        alloc:
+                          type: integer
+                        size:
+                          type: integer
+                        name:
+                          type: string
+                          minLength: 1
+                        frag:
+                          type: integer
+                        dedup:
+                          type: number
+                      required:
+                        - health
+                        - free
+                        - alloc
+                        - size
+                        - name
+                        - frag
+                        - dedup
+                required:
+                  - data
+      operationId: get-zpools
+      description: List Zpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create Zpool
+      tags: []
+      operationId: post-zpool
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create a ZFS pool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                devices:
+                  type: string
+                name:
+                  type: string
+                raidlevel:
+                  type: string
+                  enum:
+                    - single
+                    - mirror
+                    - raid10
+                    - raidz
+                    - raidz2
+                    - raidz3
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the zpool
+                ashift:
+                  type: integer
+                  minimum: 9
+                  maximum: 16
+                  default: 12
+                  description: Pool sector size exponent
+                compression:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - gzip
+                    - lz4
+                    - lzjb
+                    - zle
+                  default: 'on'
+              required:
+                - devices
+                - name
+                - raidlevel
   '/nodes/{node}/qemu':
     parameters:
       - schema:
@@ -1010,6 +1817,65 @@ paths:
                   type: string
                 watchdog:
                   type: string
+  '/nodes/{node}/qemu/{vmid}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: integer
+          minimum: 1
+        name: vmid
+        in: path
+        required: true
+    get:
+      summary: List vm operations
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    subdir:
+                      type: string
+      operationId: get-vm-operations
+      description: List the endpoints available to perform operations on this vm
+      security:
+        - Authorization: []
+    delete:
+      summary: Destroy VM
+      tags: []
+      operationId: delete-vm
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                destroy-unreferenced-disks:
+                  type: boolean
+                  default: false
+                purge:
+                  type: boolean
+                skiplock:
+                  type: boolean
+      security:
+        - Authorization: []
   '/nodes/{node}/storage/{storage}/content/{volume}':
     parameters:
       - schema:
@@ -1119,7 +1985,7 @@ paths:
                   maximum: 30
       security:
         - Authorization: []
-  '/nodes/{node}/qemu/{vmid}':
+  '/nodes/{node}/storage/{storage}/download-url':
     parameters:
       - schema:
           type: string
@@ -1127,183 +1993,14 @@ paths:
         in: path
         required: true
       - schema:
-          type: integer
-          minimum: 1
-        name: vmid
-        in: path
-        required: true
-    get:
-      summary: List vm operations
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    subdir:
-                      type: string
-      operationId: get-vm-operations
-      description: List the endpoints available to perform operations on this vm
-      security:
-        - Authorization: []
-    delete:
-      summary: Destroy VM
-      tags: []
-      operationId: delete-vm
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: string
-      description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                destroy-unreferenced-disks:
-                  type: boolean
-                  default: false
-                purge:
-                  type: boolean
-                skiplock:
-                  type: boolean
-      security:
-        - Authorization: []
-  /cluster/nextid:
-    get:
-      summary: Get next free VM Id
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: integer
-                required:
-                  - data
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      vmid:
-                        type: string
-                    required:
-                      - vmid
-                  data: {}
-                required:
-                  - error
-                x-examples:
-                  example-1:
-                    error:
-                      vmid: ''
-                    data: null
-      operationId: get-cluster-nextid
-      description: Get the next free VM ID. If you pass a VM ID it will raise an error if the ID is already used.
-      parameters:
-        - schema:
-            type: integer
-            minimum: 1
-          in: query
-          name: vmid
-      security:
-        - Authorization: []
-  '/nodes/{node}/disks/zfs':
-    parameters:
-      - schema:
           type: string
-        name: node
+        name: storage
         in: path
         required: true
-    get:
-      summary: List Zpools
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                x-examples:
-                  example-1:
-                    data:
-                      - health: ONLINE
-                        free: 2053574369280
-                        alloc: 935722868736
-                        size: 2989297238016
-                        name: spool
-                        frag: 42
-                        dedup: 1
-                      - frag: 24
-                        name: tank1
-                        dedup: 1
-                        size: 59923383713792
-                        alloc: 53005751697408
-                        free: 6917632016384
-                        health: ONLINE
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      type: object
-                      properties:
-                        health:
-                          type: string
-                          minLength: 1
-                        free:
-                          type: integer
-                        alloc:
-                          type: integer
-                        size:
-                          type: integer
-                        name:
-                          type: string
-                          minLength: 1
-                        frag:
-                          type: integer
-                        dedup:
-                          type: number
-                      required:
-                        - health
-                        - free
-                        - alloc
-                        - size
-                        - name
-                        - frag
-                        - dedup
-                required:
-                  - data
-      operationId: get-zpools
-      description: List Zpools
-      security:
-        - Authorization: []
     post:
-      summary: Create Zpool
+      summary: Download Url
       tags: []
-      operationId: post-zpool
+      operationId: post-download-url
       responses:
         '200':
           description: OK
@@ -1314,135 +2011,47 @@ paths:
                 properties:
                   data:
                     type: string
-      description: Create a ZFS pool
-      security:
-        - Authorization: []
+                required:
+                  - data
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
-                devices:
+                content:
+                  $ref: '#/components/schemas/ContentType'
+                filename:
                   type: string
-                name:
+                url:
                   type: string
-                raidlevel:
+                checksum:
                   type: string
-                  enum:
-                    - single
-                    - mirror
-                    - raid10
-                    - raidz
-                    - raidz2
-                    - raidz3
-                add_storage:
+                checksum-algorithm:
+                  $ref: '#/components/schemas/ChecksumAlgorithm'
+                verify-certificates:
                   type: boolean
-                  default: false
-                  description: Configure storage using the zpool
-                ashift:
-                  type: integer
-                  minimum: 9
-                  maximum: 16
-                  default: 12
-                  description: Pool sector size exponent
-                compression:
-                  type: string
-                  enum:
-                    - 'on'
-                    - 'off'
-                    - gzip
-                    - lz4
-                    - lzjb
-                    - zle
-                  default: 'on'
               required:
-                - devices
-                - name
-                - raidlevel
-  '/nodes/{node}/disks/directory':
+                - content
+                - filename
+                - url
+      description: Download templates and ISO images by using an URL
+      security:
+        - Authorization: []
+  '/nodes/{node}/tasks/{upid}/status':
     parameters:
       - schema:
           type: string
         name: node
         in: path
         required: true
-    get:
-      summary: Get directory storages
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        device:
-                          type: string
-                        options:
-                          type: string
-                        path:
-                          type: string
-                        type:
-                          type: string
-                        unitfile:
-                          type: string
-      operationId: get-directories
-      description: PVE Managed Directory storages.
-      security:
-        - Authorization: []
-    post:
-      summary: Create Directory
-      tags: []
-      operationId: post-directory
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                device:
-                  type: string
-                name:
-                  type: string
-                add_storage:
-                  type: boolean
-                  default: false
-                  description: Configure storage using the directory
-                filesystem:
-                  type: string
-                  enum:
-                    - ext4
-                    - xfs
-                  description: The desired filesystem
-  '/nodes/{node}/disks/lvm':
-    parameters:
       - schema:
           type: string
-        name: node
+        name: upid
         in: path
         required: true
     get:
-      summary: List LVM Volume Groups
+      summary: Read Task Status
       tags: []
       responses:
         '200':
@@ -1456,680 +2065,372 @@ paths:
                   data:
                     type: object
                     properties:
-                      children:
-                        type: array
-                        uniqueItems: true
-                        minItems: 1
-                        items:
-                          required:
-                            - free
-                            - size
-                            - lvcount
-                            - leaf
-                            - name
-                          properties:
-                            free:
-                              type: number
-                            size:
-                              type: number
-                            lvcount:
-                              type: number
-                            leaf:
-                              type: number
-                            name:
-                              type: string
-                              minLength: 1
-                            children:
-                              type: array
-                              uniqueItems: true
-                              minItems: 1
-                              items:
-                                required:
-                                  - name
-                                  - leaf
-                                  - free
-                                  - size
-                                properties:
-                                  name:
-                                    type: string
-                                    minLength: 1
-                                  leaf:
-                                    type: number
-                                  free:
-                                    type: number
-                                  size:
-                                    type: number
-                      leaf:
-                        type: number
-                    required:
-                      - children
-                      - leaf
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      children:
-                        - free: 17179869184
-                          size: 249519144960
-                          lvcount: 9
-                          leaf: 0
-                          name: pve
-                          children:
-                            - name: /dev/sdi3
-                              leaf: 1
-                              free: 17179869184
-                              size: 249519144960
-                      leaf: 0
-      operationId: get-lvm-groups
-      description: List LVM Volume Groups
-      security:
-        - Authorization: []
-    post:
-      summary: Create an LVM Volume Group
-      tags: []
-      operationId: post-lvm-group
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                required:
-                  - data
-      description: Create an LVM Volume group
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                device:
-                  type: string
-                name:
-                  type: string
-                add_storage:
-                  type: boolean
-                  default: false
-              required:
-                - device
-                - name
-  '/nodes/{node}/disks/lvmthin':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-    get:
-      summary: List LVM Thin Pools
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                x-examples:
-                  example-1:
-                    data:
-                      - lv: data
-                        metadata_size: 1614807040
-                        lv_type: t
-                        used: 15824270
-                        metadata_used: 17601396
-                        lv_size: 158242701312
-                        ctime: '1598546904'
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      type: object
-                      properties:
-                        lv:
-                          type: string
-                          minLength: 1
-                        metadata_size:
-                          type: integer
-                        lv_type:
-                          type: string
-                          minLength: 1
-                        used:
-                          type: integer
-                        metadata_used:
-                          type: integer
-                        lv_size:
-                          type: integer
-                        ctime:
-                          type: string
-                          minLength: 1
-                      required:
-                        - lv
-                        - metadata_size
-                        - lv_type
-                        - used
-                        - metadata_used
-                        - lv_size
-                        - ctime
-                required:
-                  - data
-      operationId: get-nlvmthin-pools
-      description: List LVM thinpools
-      security:
-        - Authorization: []
-    post:
-      summary: Create an LVM Thin Pool
-      tags: []
-      operationId: post-nodes-node-disks-lvmthin
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-      description: Create an LVM thinpool
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                device:
-                  type: string
-                name:
-                  type: string
-                add_storage:
-                  type: boolean
-                  default: false
-                  description: Configure storage using the thinpool
-        description: ''
-  '/nodes/{node}/ceph/pools':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-    get:
-      summary: List CEPH Pools
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      required:
-                        - pg_num
-                        - pg_autoscale_mode
-                        - bytes_used
-                        - pool
-                        - size
-                        - pg_num_min
-                        - percent_used
-                        - pg_num_final
-                        - pool_name
-                        - crush_rule
-                        - crush_rule_name
-                        - min_size
-                      properties:
-                        target_size: {}
-                        pg_num:
-                          type: number
-                        target_size_ratio: {}
-                        pg_autoscale_mode:
-                          type: string
-                          minLength: 1
-                        bytes_used:
-                          type: number
-                        pool:
-                          type: string
-                          minLength: 1
-                        size:
-                          type: number
-                        pg_num_min:
-                          type: number
-                        percent_used:
-                          type: number
-                        pg_num_final:
-                          type: number
-                        pool_name:
-                          type: string
-                          minLength: 1
-                        crush_rule:
-                          type: string
-                          minLength: 1
-                        autoscale_status:
-                          type: object
-                          properties:
-                            subtree_capacity:
-                              type: number
-                            target_bytes:
-                              type: number
-                            target_ratio:
-                              type: number
-                            effective_target_ratio:
-                              type: number
-                            bias:
-                              type: number
-                            pool_id:
-                              type: number
-                            raw_used:
-                              type: number
-                            would_adjust:
-                              type: boolean
-                            pg_num_ideal:
-                              type: number
-                            pg_num_final:
-                              type: number
-                            pool_name:
-                              type: string
-                              minLength: 1
-                            crush_root_id:
-                              type: number
-                            pg_autoscale_mode:
-                              type: string
-                              minLength: 1
-                            capacity_ratio:
-                              type: number
-                            actual_raw_used:
-                              type: number
-                            actual_capacity_ratio:
-                              type: number
-                            raw_used_rate:
-                              type: number
-                            logical_used:
-                              type: number
-                            pg_num_target:
-                              type: number
-                          required:
-                            - subtree_capacity
-                            - target_bytes
-                            - target_ratio
-                            - effective_target_ratio
-                            - bias
-                            - pool_id
-                            - raw_used
-                            - would_adjust
-                            - pg_num_ideal
-                            - pg_num_final
-                            - pool_name
-                            - crush_root_id
-                            - pg_autoscale_mode
-                            - capacity_ratio
-                            - actual_raw_used
-                            - actual_capacity_ratio
-                            - raw_used_rate
-                            - logical_used
-                            - pg_num_target
-                        crush_rule_name:
-                          type: string
-                          minLength: 1
-                        min_size:
-                          type: number
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      - target_size: null
-                        pg_num: 256
-                        target_size_ratio: null
-                        pg_autoscale_mode: 'on'
-                        bytes_used: 387336
-                        pool: '1'
-                        size: 3
-                        pg_num_min: 1
-                        percent_used: 6.34190921999789e-9
-                        pg_num_final: 256
-                        pool_name: device_health_metrics
-                        crush_rule: '0'
-                        autoscale_status:
-                          subtree_capacity: 64295161298944
-                          target_bytes: 0
-                          target_ratio: 0
-                          effective_target_ratio: 0
-                          bias: 1
-                          pool_id: 1
-                          raw_used: 1162008
-                          would_adjust: false
-                          pg_num_ideal: 300
-                          pg_num_final: 256
-                          pool_name: device_health_metrics
-                          crush_root_id: -1
-                          pg_autoscale_mode: 'on'
-                          capacity_ratio: 1.8073024105145e-8
-                          actual_raw_used: 1162008
-                          actual_capacity_ratio: 1.8073024105145e-8
-                          raw_used_rate: 3
-                          logical_used: 387336
-                          pg_num_target: 256
-                        crush_rule_name: replicated_rule
-                        min_size: 2
-      operationId: get-ceph-pools
-      description: List all pools
-      security:
-        - Authorization: []
-    post:
-      summary: Create a CEPH Pool
-      tags: []
-      operationId: post-nodes-node-ceph-pools
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                required:
-                  - data
-      description: Create POOL
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                add_storages:
-                  type: boolean
-                  description: Configure VM and CT storage using the new pool
-                application:
-                  type: string
-                  enum:
-                    - rbd
-                    - cephfs
-                    - rgw
-                  default: rbd
-                crush_rule:
-                  type: string
-                min_size:
-                  type: integer
-                  default: 2
-                  minimum: 1
-                  maximum: 7
-                pg_autoscale_mode:
-                  type: string
-                  enum:
-                    - 'on'
-                    - 'off'
-                    - warn
-                  default: warn
-                pg_num:
-                  type: integer
-                  default: 128
-                  minimum: 1
-                  maximum: 32768
-                pg_num_min:
-                  type: integer
-                  maximum: 32768
-                size:
-                  type: integer
-                  default: 3
-                  minimum: 1
-                  maximum: 7
-                target_size:
-                  type: string
-                target_size_ratio:
-                  type: number
-              required:
-                - name
-  '/nodes/{node}/ceph/pools/{name}':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: name
-        in: path
-        required: true
-    get:
-      summary: List Pool Settings
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                x-examples:
-                  example-1:
-                    data:
-                      name: device_health_metrics
-                      target_size: null
-                      hashpspool: '1'
-                      noscrub: '0'
-                      size: 3
-                      use_gmt_hitset: '1'
-                      pg_num: 256
-                      nodelete: '0'
-                      pg_autoscale_mode: 'on'
-                      nopgchange: '0'
-                      target_size_ratio: null
-                      fast_read: '0'
-                      nodeep-scrub: '0'
-                      crush_rule: replicated_rule
-                      write_fadvise_dontneed: '0'
-                      id: 1
-                      pg_num_min: 1
-                      min_size: 2
-                      pgp_num: 1
-                      nosizechange: '0'
-                properties:
-                  data:
-                    type: object
-                    required:
-                      - name
-                      - hashpspool
-                      - noscrub
-                      - use_gmt_hitset
-                      - nodelete
-                      - nopgchange
-                      - fast_read
-                      - nodeep-scrub
-                      - write_fadvise_dontneed
-                      - id
-                      - pgp_num
-                      - nosizechange
-                    properties:
-                      name:
+                      node:
                         type: string
                         minLength: 1
-                      target_size:
-                        type: string
-                      hashpspool:
+                      status:
                         type: string
                         minLength: 1
-                      noscrub:
+                      exitstatus:
                         type: string
                         minLength: 1
-                      size:
-                        type: number
-                      use_gmt_hitset:
+                      tokenid:
                         type: string
                         minLength: 1
-                      pg_num:
-                        type: number
-                      nodelete:
+                      upid:
                         type: string
                         minLength: 1
-                      pg_autoscale_mode:
-                        type: string
-                        minLength: 1
-                      nopgchange:
-                        type: string
-                        minLength: 1
-                      target_size_ratio:
-                        type: number
-                      fast_read:
-                        type: string
-                        minLength: 1
-                      nodeep-scrub:
-                        type: string
-                        minLength: 1
-                      crush_rule:
-                        type: string
-                        minLength: 1
-                      write_fadvise_dontneed:
+                      type:
                         type: string
                         minLength: 1
                       id:
-                        type: number
-                      pg_num_min:
-                        type: number
-                      min_size:
-                        type: number
-                      pgp_num:
-                        type: number
-                      nosizechange:
                         type: string
                         minLength: 1
-                      application:
+                      starttime:
+                        type: number
+                      pid:
+                        type: number
+                      user:
                         type: string
-                      application_list:
-                        type: string
-                      autoscale_status:
-                        type: string
-                      statistics:
-                        type: object
+                        minLength: 1
+                      pstart:
+                        type: number
+                    required:
+                      - node
+                      - status
+                      - exitstatus
+                      - tokenid
+                      - upid
+                      - type
+                      - id
+                      - starttime
+                      - pid
+                      - user
+                      - pstart
                 required:
                   - data
-      operationId: get-ceph-pool-settings
-      description: List pool settings
+                x-examples:
+                  example-1:
+                    data:
+                      node: zeus
+                      status: stopped
+                      exitstatus: OK
+                      tokenid: pulumi-dev
+                      upid: 'UPID:zeus:001F6417:02CFF9DA:61611FDB:download:k3os-amd64-dev.iso:root@pam!pulumi-dev:'
+                      type: download
+                      id: k3os-amd64-dev.iso
+                      starttime: 1633755099
+                      pid: 2057239
+                      user: root@pam
+                      pstart: 47184346
+      operationId: get-node-task-status
+      description: Read task status
       security:
         - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                verbose:
-                  type: boolean
-                  default: false
-    put:
-      summary: Change Pool Settings
+  /storage:
+    get:
+      summary: Storage index
       tags: []
-      operationId: put-ceph-pool-settings
+      operationId: list-storage
+      description: Storage index
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
+                description: ''
                 type: object
                 properties:
                   data:
-                    type: string
-      description: Change POOL settings
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - sparse
+                        - content
+                        - mountpoint
+                        - pool
+                        - digest
+                        - storage
+                        - nodes
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        sparse:
+                          type: number
+                        content:
+                          type: string
+                          minLength: 1
+                        mountpoint:
+                          type: string
+                          minLength: 1
+                        pool:
+                          type: string
+                          minLength: 1
+                        digest:
+                          type: string
+                          minLength: 1
+                        storage:
+                          type: string
+                          minLength: 1
+                        nodes:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - type: zfspool
+                        sparse: 0
+                        content: 'rootdir,images'
+                        mountpoint: /tank1/vm-data/limited
+                        pool: tank1/vm-data/limited
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-vm-data-limited
+                        nodes: 'zeus,apollo'
+                      - content: 'images,rootdir'
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        type: lvmthin
+                        vgname: pve
+                        thinpool: data
+                        storage: local-lvm
+                      - server: zeus
+                        type: nfs
+                        content: 'iso,vztmpl'
+                        storage: isos
+                        path: /mnt/pve/isos
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        shared: 1
+                        export: /tank1/media/isos
+                      - type: dir
+                        content: backup
+                        shared: 0
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-backup
+                        prune-backups: keep-last=1
+                        path: /tank1/backup
+                        nodes: 'zeus,apollo'
+                      - digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: spool
+                        type: zfspool
+                        sparse: 1
+                        content: 'rootdir,images'
+                        pool: spool
+                        mountpoint: /spool
+                      - path: /var/lib/vz
+                        storage: local
+                        content: 'vztmpl,backup,iso'
+                        type: dir
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                      - mountpoint: /tank1/vm-data
+                        pool: tank1/vm-data
+                        content: 'images,rootdir'
+                        sparse: 0
+                        type: zfspool
+                        nodes: 'zeus,apollo'
+                        storage: zfs-vm-data
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - btrfs
+              - cephfs
+              - cifs
+              - dir
+              - glusterfs
+              - iscsi
+              - iscsidirect
+              - lvm
+              - lvmthin
+              - nfs
+              - pbs
+              - rbd
+              - zfs
+              - zfspool
+          in: query
+          name: type
+          description: Only list storage of a specfic type
       security:
         - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                application:
-                  type: string
-                  enum:
-                    - rbd
-                    - cephfs
-                    - rgw
-                crush_rule:
-                  type: string
-                min_size:
-                  type: integer
-                  minimum: 1
-                  maximum: 7
-                pg_autoscale_mode:
-                  type: string
-                  enum:
-                    - 'on'
-                    - 'off'
-                    - warn
-                pg_num:
-                  type: integer
-                  minimum: 1
-                  maximum: 32768
-                pg_num_min:
-                  type: integer
-                  example: 0
-                  maximum: 32768
-                size:
-                  type: integer
-                  minimum: 1
-                  maximum: 7
-                target_size:
-                  type: string
-                target_size_ratio:
-                  type: number
-    delete:
-      summary: Destroy Pool
+    post:
+      summary: Create Storage
       tags: []
-      operationId: delete-ceph-pool
+      operationId: post-storage
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
+                title: CreateStorageRequest
                 type: object
                 properties:
                   data:
-                    type: string
-      description: Destroy pool
-      security:
-        - Authorization: []
+                    type: object
+                    properties:
+                      storage:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/StorageType'
+                      config:
+                        type: object
+                    required:
+                      - storage
+                      - type
+      description: Create a new storage
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
+              title: CreateStorageRequest
               type: object
               properties:
-                force:
+                storage:
+                  type: string
+                  description: The storage identifier
+                type:
+                  $ref: '#/components/schemas/StorageType'
+                authsupported:
+                  type: string
+                  description: Is auth supported
+                base:
+                  type: string
+                  description: Base volume. This volume is automatically activated
+                blocksize:
+                  type: string
+                  description: Block size
+                bwlimit:
+                  type: string
+                  description: Set bandwidth/io limit for various operations
+                comstar_hg:
+                  type: string
+                  description: Host group for comstar views
+                comstart_tg:
+                  type: string
+                  description: Target group for comstar views
+                content:
+                  type: string
+                  description: |-
+                    Allowed content types.
+                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
+                datastore:
+                  type: string
+                  description: Proxmox Backup Server datastore name
+                disable:
+                  type: boolean
+                domain:
+                  type: string
+                encryption-key:
+                  type: string
+                export:
+                  type: string
+                fingerprint:
+                  type: string
+                format:
+                  type: string
+                fuse:
+                  type: string
+                is_mountpoint:
+                  type: string
+                  enum:
+                    - 'yes'
+                    - 'no'
+                  default: 'no'
+                iscsiprovider:
+                  type: string
+                krbd:
+                  type: boolean
+                lio_tpg:
+                  type: string
+                master-pubkey:
+                  type: string
+                maxfiles:
+                  type: integer
+                  minimum: 0
+                mkdir:
+                  type: boolean
+                  default: true
+                monhost:
+                  type: string
+                mountpoint:
+                  type: string
+                namespace:
+                  type: string
+                nocow:
                   type: boolean
                   default: false
-                remove_storage:
+                nodes:
+                  type: string
+                nowritecache:
                   type: boolean
-                  default: false
+                options:
+                  type: string
+                password:
+                  type: string
+                path:
+                  type: string
+                pool:
+                  type: string
+                port:
+                  type: integer
+                  default: 8007
+                  minimum: 1
+                  maximum: 65535
+                portal:
+                  type: string
+                prune-backups:
+                  type: string
+                saferemove:
+                  type: boolean
+                saferemove_throughput:
+                  type: string
+                server:
+                  type: string
+                server2:
+                  type: string
+                share:
+                  type: string
+                shared:
+                  type: boolean
+                smbversion:
+                  type: string
+                  enum:
+                    - '2.0'
+                    - '2.1'
+                    - '3.0'
+                sparse:
+                  type: boolean
+                subdir:
+                  type: string
+                tagged_only:
+                  type: boolean
+                target:
+                  type: string
+                thinpool:
+                  type: string
+                transport:
+                  type: string
+                  enum:
+                    - tcp
+                    - rdma
+                    - unix
+                username:
+                  type: string
+                vgname:
+                  type: string
+                volume:
+                  type: string
+              required:
+                - storage
+                - type
+      security:
+        - Authorization: []
   '/storage/{storage}':
     parameters:
       - schema:
@@ -2346,133 +2647,11 @@ paths:
       description: Delete storage configuration
       security:
         - Authorization: []
-  /cluster/replication:
+  /version:
     get:
-      summary: List Replication Jobs
+      summary: API version details
       tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      required:
-                        - jobnum
-                        - source
-                        - id
-                        - type
-                        - target
-                        - guest
-                      properties:
-                        jobnum:
-                          type: string
-                          minLength: 1
-                        source:
-                          type: string
-                          minLength: 1
-                        id:
-                          type: string
-                          minLength: 1
-                        type:
-                          type: string
-                          minLength: 1
-                        target:
-                          type: string
-                          minLength: 1
-                        guest:
-                          type: string
-                          minLength: 1
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      - jobnum: '0'
-                        source: zeus
-                        id: 101-0
-                        type: local
-                        target: herra
-                        guest: '101'
-                      - id: 110-0
-                        target: herra
-                        type: local
-                        source: zeus
-                        jobnum: '0'
-                        guest: '110'
-                      - guest: '114'
-                        target: herra
-                        type: local
-                        id: 114-0
-                        source: zeus
-                        jobnum: '0'
-      operationId: list-replication
-      description: List replication jobs
-      security:
-        - Authorization: []
-    post:
-      summary: Create Replication Job
-      tags: []
-      operationId: post-replication
-      responses:
-        '200':
-          description: OK
-      description: Create a new replication job
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  description: 'Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. ''<GUEST>-<JOBNUM>''.'
-                target:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - local
-                comment:
-                  type: string
-                disable:
-                  type: boolean
-                rate:
-                  type: number
-                  minimum: 1
-                remove_job:
-                  type: string
-                  enum:
-                    - local
-                    - full
-                schedule:
-                  type: string
-                  default: '*/15'
-                source:
-                  type: string
-              required:
-                - id
-                - target
-                - type
-  '/cluster/replication/{id}':
-    parameters:
-      - schema:
-          type: string
-        name: id
-        in: path
-        required: true
-    get:
-      summary: Get Replication Job Configuration
-      tags: []
+      operationId: get-version
       responses:
         '200':
           description: OK
@@ -2485,212 +2664,33 @@ paths:
                   data:
                     type: object
                     properties:
-                      jobnum:
+                      repoid:
                         type: string
                         minLength: 1
-                      digest:
+                      version:
                         type: string
                         minLength: 1
-                      source:
+                      keyboard:
                         type: string
                         minLength: 1
-                      type:
-                        type: string
-                        minLength: 1
-                      target:
-                        type: string
-                        minLength: 1
-                      id:
-                        type: string
-                        minLength: 1
-                      guest:
+                      release:
                         type: string
                         minLength: 1
                     required:
-                      - jobnum
-                      - digest
-                      - source
-                      - type
-                      - target
-                      - id
-                      - guest
+                      - repoid
+                      - version
+                      - keyboard
+                      - release
                 required:
                   - data
                 x-examples:
                   example-1:
                     data:
-                      jobnum: '0'
-                      digest: cf4b401a358cc3da20b7ddfffbed4b71fbcf8b65
-                      source: zeus
-                      type: local
-                      target: herra
-                      id: 101-0
-                      guest: '101'
-      operationId: get-replication
-      description: Read replication job configuration
-      security:
-        - Authorization: []
-    put:
-      summary: Update Replication Job Configuration
-      tags: []
-      operationId: put-replication
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data: {}
-      security:
-        - Authorization: []
-      description: Update replication job configuration
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                comment:
-                  type: string
-                delete:
-                  type: string
-                digest:
-                  type: string
-                disable:
-                  type: boolean
-                rate:
-                  type: number
-                  minimum: 1
-                remove_job:
-                  type: string
-                  enum:
-                    - local
-                    - full
-                schedule:
-                  type: string
-                  default: '*/15'
-                soruce:
-                  type: string
-        description: ''
-    delete:
-      summary: Delete Replication Job
-      tags: []
-      operationId: delete-replication
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data: {}
-      description: Mark replication job for removal
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                force:
-                  type: boolean
-                  default: false
-                keep:
-                  type: boolean
-                  default: false
-  '/nodes/{node}/tasks/{upid}/status':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: upid
-        in: path
-        required: true
-    get:
-      summary: Read Task Status
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      node:
-                        type: string
-                        minLength: 1
-                      status:
-                        type: string
-                        minLength: 1
-                      exitstatus:
-                        type: string
-                        minLength: 1
-                      tokenid:
-                        type: string
-                        minLength: 1
-                      upid:
-                        type: string
-                        minLength: 1
-                      type:
-                        type: string
-                        minLength: 1
-                      id:
-                        type: string
-                        minLength: 1
-                      starttime:
-                        type: number
-                      pid:
-                        type: number
-                      user:
-                        type: string
-                        minLength: 1
-                      pstart:
-                        type: number
-                    required:
-                      - node
-                      - status
-                      - exitstatus
-                      - tokenid
-                      - upid
-                      - type
-                      - id
-                      - starttime
-                      - pid
-                      - user
-                      - pstart
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      node: zeus
-                      status: stopped
-                      exitstatus: OK
-                      tokenid: pulumi-dev
-                      upid: 'UPID:zeus:001F6417:02CFF9DA:61611FDB:download:k3os-amd64-dev.iso:root@pam!pulumi-dev:'
-                      type: download
-                      id: k3os-amd64-dev.iso
-                      starttime: 1633755099
-                      pid: 2057239
-                      user: root@pam
-                      pstart: 47184346
-      operationId: get-node-task-status
-      description: Read task status
-      security:
-        - Authorization: []
+                      repoid: 63d82f4e
+                      version: 7.0-11
+                      keyboard: en-us
+                      release: '7.0'
+      description: API version details. The result also includes the global datacenter confguration.
 components:
   schemas:
     StorageType:
