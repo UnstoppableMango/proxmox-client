@@ -1522,6 +1522,8 @@ paths:
             schema:
               type: object
               properties:
+                vmid:
+                  type: integer
                 acpi:
                   type: boolean
                   default: true
@@ -1817,6 +1819,8 @@ paths:
                   type: string
                 watchdog:
                   type: string
+              required:
+                - vmid
   '/nodes/{node}/qemu/{vmid}':
     parameters:
       - schema:
