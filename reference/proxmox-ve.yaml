@@ -1876,6 +1876,73 @@ paths:
                   type: boolean
       security:
         - Authorization: []
+  '/nodes/{node}/storage/{storage}/content':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    get:
+      summary: List storage content
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        format:
+                          type: string
+                        size:
+                          type: integer
+                        volid:
+                          type: string
+                        ctime:
+                          type: integer
+                        encrypted:
+                          type: string
+                        notes:
+                          type: string
+                        parent:
+                          type: string
+                        used:
+                          type: integer
+                        verification:
+                          type: object
+                        vmid:
+                          type: integer
+                      required:
+                        - format
+                        - size
+                        - volid
+      operationId: list-node-storage-content
+      description: List storage content
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                vmid:
+                  type: integer
+                  minimum: 1
   '/nodes/{node}/storage/{storage}/content/{volume}':
     parameters:
       - schema:
