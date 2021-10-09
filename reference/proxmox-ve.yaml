@@ -1647,8 +1647,11 @@ paths:
                     - sl
                     - tr
                 kvm:
-                  type: boolean
-                  default: true
+                  type: string
+                  default: '0'
+                  enum:
+                    - '0'
+                    - '1'
                 live-restore:
                   type: boolean
                 localtime:
@@ -1693,8 +1696,11 @@ paths:
                 numa0:
                   type: string
                 onboot:
-                  type: boolean
-                  default: false
+                  type: string
+                  default: '0'
+                  enum:
+                    - '0'
+                    - '1'
                 ostype:
                   type: string
                   enum:
