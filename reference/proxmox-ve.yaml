@@ -1883,12 +1883,21 @@ paths:
               type: object
               properties:
                 destroy-unreferenced-disks:
-                  type: boolean
-                  default: false
+                  type: string
+                  default: '0'
+                  enum:
+                    - '0'
+                    - '1'
                 purge:
-                  type: boolean
+                  type: string
+                  enum:
+                    - '0'
+                    - '1'
                 skiplock:
-                  type: boolean
+                  type: string
+                  enum:
+                    - '0'
+                    - '1'
       security:
         - Authorization: []
   '/nodes/{node}/storage/{storage}/content':
