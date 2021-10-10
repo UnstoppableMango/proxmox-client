@@ -1922,7 +1922,7 @@ paths:
         in: path
         required: true
       - schema:
-          type: string
+          type: integer
         name: vmid
         in: path
         required: true
@@ -1939,6 +1939,8 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/VmConfig'
+                required:
+                  - data
       operationId: get-vm-config
       description: Get the virtual machine configuration with pending configuration changes applied. Set the 'current' parameter to get the current configuration instead.
       security:
@@ -1958,6 +1960,30 @@ paths:
           in: query
           name: snapshot
           description: Fetch config values from given snapshot
+    post:
+      summary: Set VM Options
+      operationId: post-vm-config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Set virtual machine options (asynchronous API).
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VmConfig'
+        description: ''
   '/nodes/{node}/storage/{storage}/content':
     parameters:
       - schema:
@@ -2881,8 +2907,6 @@ components:
       title: VmConfig
       type: object
       properties:
-        vmid:
-          type: integer
         acpi:
           type: boolean
           default: true
