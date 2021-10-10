@@ -3036,7 +3036,308 @@ components:
       title: VmConfig
       type: object
       properties:
-        id:
+        vmid:
+          type: integer
+        acpi:
+          type: boolean
+          default: true
+        agent:
+          type: string
+          example: '[enaled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]'
+        arch:
+          type: string
+        archive:
+          type: string
+        args:
+          type: string
+        audio0:
+          type: string
+        autostart:
+          type: boolean
+        balloon:
+          type: integer
+          minimum: 0
+          description: Amount of target RAM for the VM in MB. Using zero disables the balloon driver.
+        bios:
+          type: string
+          enum:
+            - seabios
+            - ovmf
+          default: seabios
+        boot:
+          type: string
+        bootdisk:
+          type: string
+        bwlimit:
+          type: integer
+          minimum: 0
+          description: Overrid I/O bandwitdh limit (in KiB/s).
+        cdrom:
+          type: string
+        cicustom:
+          type: string
+        cipassword:
+          type: string
+        citype:
+          type: string
+          enum:
+            - configdrive2
+            - nocloud
+            - opennebula
+          description: 'Specifies the cloud-init configuration format. The default depends on the confiugred operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows).'
+        ciuser:
+          type: string
+        cores:
+          type: integer
+          minimum: 1
+          default: 1
+        cpu:
+          type: string
+        cpulimit:
+          type: number
+          minimum: 0
+          maximum: 128
+          default: 0
+        cpuunits:
+          type: integer
+          default: 1024
+          minimum: 2
+          maximum: 262144
+        description:
+          type: string
+        efidisk0:
+          type: string
+        force:
+          type: boolean
+        freeze:
+          type: boolean
+        hookscript:
+          type: string
+        hostpci0:
+          type: string
+        hotplug:
+          type: string
+        hugepages:
+          type: string
+          enum:
+            - any
+            - '2'
+            - '1024'
+        ide0:
+          type: string
+        ipconfig0:
+          type: string
+        ivshmem:
+          type: string
+        keephugepages:
+          type: boolean
+          default: false
+        keyboard:
+          type: string
+          enum:
+            - de
+            - de-ch
+            - da
+            - en-gb
+            - en-us
+            - es
+            - fi
+            - fr
+            - fr-be
+            - fr-ca
+            - fr-ch
+            - hu
+            - is
+            - it
+            - ja
+            - lt
+            - mk
+            - nl
+            - 'no'
+            - pl
+            - pt
+            - pt-br
+            - sv
+            - sl
+            - tr
+        kvm:
+          type: string
+          default: '0'
+          enum:
+            - '0'
+            - '1'
+        live-restore:
+          type: boolean
+        localtime:
+          type: boolean
+        lock:
+          type: string
+          enum:
+            - backup
+            - clone
+            - create
+            - migrate
+            - rollback
+            - snapshot
+            - snapshot-delete
+            - suspending
+            - suspended
+        machine:
+          type: string
+        memory:
+          type: integer
+          minimum: 16
+          default: 512
+          exclusiveMaximum: false
+          description: Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+        migrate_downtime:
+          type: number
+          default: 0.1
+          minimum: 0
+        migrate_speed:
+          type: integer
+          default: 0
+          minimum: 0
+        name:
+          type: string
+        nameserver:
+          type: string
+        net0:
+          type: string
+        numa:
+          type: boolean
+          default: false
+        numa0:
+          type: string
+        onboot:
+          type: string
+          default: '0'
+          enum:
+            - '0'
+            - '1'
+        ostype:
+          type: string
+          enum:
+            - other
+            - wxp
+            - w2k
+            - w2k3
+            - w2k8
+            - wvista
+            - win7
+            - win8
+            - l24
+            - l26
+            - solaris
+        parallel0:
+          type: string
+        pool:
+          type: string
+        protection:
+          type: boolean
+          default: false
+        reboot:
+          type: boolean
+          default: true
+        rng0:
+          type: string
+        sata0:
+          type: string
+        sata1:
+          type: string
+        sata2:
+          type: string
+        scsi0:
+          type: string
+        scsi1:
+          type: string
+        scsi2:
+          type: string
+        scsihw:
+          type: string
+          enum:
+            - lsi
+            - lsi53c810
+            - virtio-scsi-pci
+            - virtio-scsi-single
+            - megasas
+            - pvscsi
+          default: lsi
+        searchdomain:
+          type: string
+        serial0:
+          type: string
+        shares:
+          type: integer
+          minimum: 0
+          maximum: 50000
+          default: 1000
+        smbios1:
+          type: string
+        smp:
+          type: integer
+          default: 1
+          minimum: 1
+        sockets:
+          type: integer
+          default: 1
+          minimum: 1
+        spice_enhancements:
+          type: string
+        sshkeys:
+          type: string
+        start:
+          type: boolean
+          default: false
+        startdate:
+          type: string
+          default: now
+        startup:
+          type: string
+        storage:
+          type: string
+        tablet:
+          type: boolean
+          default: true
+        tags:
+          type: string
+        tdf:
+          type: boolean
+          default: false
+        template:
+          type: boolean
+          default: false
+        unique:
+          type: boolean
+        unused0:
+          type: string
+        usb0:
+          type: string
+        usb1:
+          type: string
+        usb2:
+          type: string
+        usb3:
+          type: string
+        usb4:
+          type: string
+        vcpus:
+          type: integer
+          default: 0
+          minimum: 0
+        vga:
+          type: string
+        virtio0:
+          type: string
+        virtio1:
+          type: string
+        virtio2:
+          type: string
+        vmgenid:
+          type: string
+        vmstatestorage:
+          type: string
+        watchdog:
           type: string
   responses: {}
   requestBodies: {}
