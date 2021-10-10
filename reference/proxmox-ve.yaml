@@ -1874,32 +1874,36 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  data:
+                    type: string
       description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                destroy-unreferenced-disks:
-                  type: string
-                  default: '0'
-                  enum:
-                    - '0'
-                    - '1'
-                purge:
-                  type: string
-                  enum:
-                    - '0'
-                    - '1'
-                skiplock:
-                  type: string
-                  enum:
-                    - '0'
-                    - '1'
       security:
         - Authorization: []
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: destroy-unreferenced-disks
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          in: query
+          name: purge
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          in: query
+          name: skiplock
   '/nodes/{node}/storage/{storage}/content':
     parameters:
       - schema:
