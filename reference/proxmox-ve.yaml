@@ -9,247 +9,6 @@ servers:
   - url: 'https://localhost:8006/api2/json'
     description: ''
 paths:
-  /version:
-    get:
-      summary: API version details
-      tags: []
-      operationId: get-version
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      repoid:
-                        type: string
-                        minLength: 1
-                      version:
-                        type: string
-                        minLength: 1
-                      keyboard:
-                        type: string
-                        minLength: 1
-                      release:
-                        type: string
-                        minLength: 1
-                    required:
-                      - repoid
-                      - version
-                      - keyboard
-                      - release
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      repoid: 63d82f4e
-                      version: 7.0-11
-                      keyboard: en-us
-                      release: '7.0'
-      description: API version details. The result also includes the global datacenter confguration.
-  /storage:
-    get:
-      summary: Storage index
-      tags: []
-      operationId: get-storage
-      description: Storage index
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      required:
-                        - type
-                        - sparse
-                        - content
-                        - mountpoint
-                        - pool
-                        - digest
-                        - storage
-                        - nodes
-                      properties:
-                        type:
-                          type: string
-                          minLength: 1
-                        sparse:
-                          type: number
-                        content:
-                          type: string
-                          minLength: 1
-                        mountpoint:
-                          type: string
-                          minLength: 1
-                        pool:
-                          type: string
-                          minLength: 1
-                        digest:
-                          type: string
-                          minLength: 1
-                        storage:
-                          type: string
-                          minLength: 1
-                        nodes:
-                          type: string
-                          minLength: 1
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      - type: zfspool
-                        sparse: 0
-                        content: 'rootdir,images'
-                        mountpoint: /tank1/vm-data/limited
-                        pool: tank1/vm-data/limited
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: zfs-vm-data-limited
-                        nodes: 'zeus,apollo'
-                      - content: 'images,rootdir'
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        type: lvmthin
-                        vgname: pve
-                        thinpool: data
-                        storage: local-lvm
-                      - server: zeus
-                        type: nfs
-                        content: 'iso,vztmpl'
-                        storage: isos
-                        path: /mnt/pve/isos
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        shared: 1
-                        export: /tank1/media/isos
-                      - type: dir
-                        content: backup
-                        shared: 0
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: zfs-backup
-                        prune-backups: keep-last=1
-                        path: /tank1/backup
-                        nodes: 'zeus,apollo'
-                      - digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                        storage: spool
-                        type: zfspool
-                        sparse: 1
-                        content: 'rootdir,images'
-                        pool: spool
-                        mountpoint: /spool
-                      - path: /var/lib/vz
-                        storage: local
-                        content: 'vztmpl,backup,iso'
-                        type: dir
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-                      - mountpoint: /tank1/vm-data
-                        pool: tank1/vm-data
-                        content: 'images,rootdir'
-                        sparse: 0
-                        type: zfspool
-                        nodes: 'zeus,apollo'
-                        storage: zfs-vm-data
-                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
-      parameters:
-        - schema:
-            type: string
-            enum:
-              - btrfs
-              - cephfs
-              - cifs
-              - dir
-              - glusterfs
-              - iscsi
-              - iscsidirect
-              - lvm
-              - lvmthin
-              - nfs
-              - pbs
-              - rbd
-              - zfs
-              - zfspool
-          in: query
-          name: type
-          description: Only list storage of a specfic type
-      security:
-        - Authorization: []
-    post:
-      summary: Create Storage
-      tags: []
-      operationId: post-storage
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                title: CreateStorageRequest
-                type: object
-                properties:
-                  storage:
-                    type: string
-                  type:
-                    $ref: '#/components/schemas/StorageType'
-                  config:
-                    type: object
-                required:
-                  - storage
-                  - type
-      description: Create a new storage
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              title: CreateStorageRequest
-              type: object
-              properties:
-                storage:
-                  type: string
-                  description: The storage identifier
-                type:
-                  $ref: '#/components/schemas/StorageType'
-                authsupported:
-                  type: string
-                  description: Is auth supported
-                base:
-                  type: string
-                  description: Base volume. This volume is automatically activated
-                blocksize:
-                  type: string
-                  description: Block size
-                bwlimit:
-                  type: string
-                  description: Set bandwidth/io limit for various operations
-                comstar_hg:
-                  type: string
-                  description: Host group for comstar views
-                comstart_tg:
-                  type: string
-                  description: Target group for comstar views
-                content:
-                  type: string
-                  description: |-
-                    Allowed content types.
-                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
-                datastore:
-                  type: string
-                  description: Proxmox Backup Server datastore name
-              required:
-                - storage
-                - type
-      security:
-        - Authorization: []
   /access/ticket:
     get:
       summary: Get Ticket
@@ -312,756 +71,6 @@ paths:
                 - username
                 - password
         description: ''
-  '/nodes/{node}/storage/{storage}/download-url':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: storage
-        in: path
-        required: true
-    post:
-      summary: Download Url
-      tags: []
-      operationId: post-download-url
-      responses:
-        '200':
-          description: OK
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                content:
-                  $ref: '#/components/schemas/ContentType'
-                filename:
-                  type: string
-                url:
-                  type: string
-                checksum:
-                  type: string
-                checksum-algorithm:
-                  $ref: '#/components/schemas/ChecksumAlgorithm'
-                verify-certificates:
-                  type: boolean
-              required:
-                - content
-                - filename
-                - url
-      description: Download templates and ISO images by using an URL
-      security:
-        - Authorization: []
-  '/nodes/{node}/qemu':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-    get:
-      summary: VM Index
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      required:
-                        - maxmem
-                        - diskwrite
-                        - cpu
-                        - vmid
-                        - name
-                        - pid
-                        - uptime
-                        - netout
-                        - diskread
-                        - cpus
-                        - netin
-                        - status
-                        - maxdisk
-                        - disk
-                        - mem
-                      properties:
-                        maxmem:
-                          type: number
-                        diskwrite:
-                          type: number
-                        cpu:
-                          type: number
-                        vmid:
-                          type: number
-                        name:
-                          type: string
-                          minLength: 1
-                        pid:
-                          type: number
-                        uptime:
-                          type: number
-                        netout:
-                          type: number
-                        diskread:
-                          type: number
-                        cpus:
-                          type: number
-                        netin:
-                          type: number
-                        status:
-                          type: string
-                          minLength: 1
-                        maxdisk:
-                          type: number
-                        disk:
-                          type: number
-                        mem:
-                          type: number
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      - maxmem: 8589934592
-                        diskwrite: 0
-                        cpu: 0
-                        vmid: 130
-                        name: cf-zeus
-                        pid: 65378
-                        uptime: 368136
-                        netout: 3463886720
-                        diskread: 0
-                        cpus: 8
-                        netin: 4196923685
-                        status: running
-                        maxdisk: 53687091200
-                        disk: 0
-                        mem: 2954544168
-                      - mem: 7012551905
-                        disk: 0
-                        cpus: 16
-                        diskread: 0
-                        netin: 87605227798
-                        status: running
-                        maxdisk: 214748364800
-                        uptime: 368165
-                        pid: 7638
-                        netout: 10769210013
-                        maxmem: 8589934592
-                        diskwrite: 0
-                        cpu: 0
-                        name: plex
-                        vmid: 114
-                      - maxmem: 8589934592
-                        diskwrite: 0
-                        cpu: 0
-                        name: kube-worker-zeus01
-                        vmid: 117
-                        uptime: 368161
-                        pid: 7927
-                        netout: 27148925699
-                        cpus: 4
-                        diskread: 0
-                        netin: 9776137147
-                        maxdisk: 53687091200
-                        status: running
-                        mem: 3813369932
-                        disk: 0
-                      - netin: 0
-                        status: stopped
-                        maxdisk: 134217728000
-                        diskread: 0
-                        cpus: 16
-                        mem: 0
-                        disk: 0
-                        name: mediabox
-                        vmid: 101
-                        maxmem: 17179869184
-                        diskwrite: 0
-                        cpu: 0
-                        netout: 0
-                        uptime: 0
-                      - mem: 1473323921
-                        disk: 0
-                        status: running
-                        maxdisk: 107374182400
-                        netin: 9800668684
-                        cpus: 4
-                        diskread: 0
-                        netout: 3766862058
-                        uptime: 368169
-                        pid: 7516
-                        name: 2plex
-                        vmid: 110
-                        cpu: 0
-                        maxmem: 2147483648
-                        diskwrite: 0
-                      - maxmem: 8589934592
-                        diskwrite: 0
-                        cpu: 0
-                        name: kube-worker-zeus02
-                        vmid: 126
-                        uptime: 368141
-                        pid: 54676
-                        netout: 4273868242
-                        diskread: 0
-                        cpus: 4
-                        netin: 7713974085
-                        maxdisk: 53687091200
-                        status: running
-                        mem: 3281715123
-                        disk: 0
-                      - disk: 0
-                        mem: 2382452360
-                        cpus: 4
-                        diskread: 0
-                        netin: 5751144509
-                        maxdisk: 34359738368
-                        status: running
-                        pid: 20730
-                        uptime: 368151
-                        netout: 2697793554
-                        diskwrite: 0
-                        maxmem: 4294967296
-                        cpu: 0
-                        vmid: 122
-                        name: kube-stor-zeus01
-                      - name: kube-ctrl-zeus
-                        vmid: 123
-                        cpu: 0
-                        maxmem: 4294967296
-                        diskwrite: 0
-                        netout: 98131700679
-                        uptime: 368146
-                        pid: 35391
-                        status: running
-                        maxdisk: 34359738368
-                        netin: 73812275872
-                        cpus: 4
-                        diskread: 0
-                        mem: 3421381247
-                        disk: 0
-                      - pid: 10552
-                        uptime: 368156
-                        netout: 4143064458
-                        diskwrite: 0
-                        maxmem: 4294967296
-                        cpu: 0
-                        vmid: 121
-                        name: kube-stor-zeus02
-                        disk: 0
-                        mem: 2250329739
-                        cpus: 4
-                        diskread: 0
-                        netin: 7515938315
-                        maxdisk: 34359738368
-                        status: running
-      operationId: get-node-qemu
-      description: Virtual machine index (per node).
-      security:
-        - Authorization: []
-      parameters:
-        - schema:
-            type: boolean
-          in: query
-          name: full
-          description: Determine the full status of active VMs
-    post:
-      summary: Create VM
-      tags: []
-      operationId: post-node-qemu
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: string
-      security:
-        - Authorization: []
-      parameters: []
-      description: Create or restore a virtual machine
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                acpi:
-                  type: boolean
-                  default: true
-                agent:
-                  type: string
-                  example: '[enaled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]'
-                arch:
-                  type: string
-                archive:
-                  type: string
-                args:
-                  type: string
-                audio0:
-                  type: string
-                autostart:
-                  type: boolean
-                balloon:
-                  type: integer
-                  minimum: 0
-                  description: Amount of target RAM for the VM in MB. Using zero disables the balloon driver.
-                bios:
-                  type: string
-                  enum:
-                    - seabios
-                    - ovmf
-                  default: seabios
-                boot:
-                  type: string
-                bootdisk:
-                  type: string
-                bwlimit:
-                  type: integer
-                  minimum: 0
-                  description: Overrid I/O bandwitdh limit (in KiB/s).
-                cdrom:
-                  type: string
-                cicustom:
-                  type: string
-                cipassword:
-                  type: string
-                citype:
-                  type: string
-                  enum:
-                    - configdrive2
-                    - nocloud
-                    - opennebula
-                  description: 'Specifies the cloud-init configuration format. The default depends on the confiugred operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows).'
-                ciuser:
-                  type: string
-                cores:
-                  type: integer
-                  minimum: 1
-                  default: 1
-                cpu:
-                  type: string
-                cpulimit:
-                  type: number
-                  minimum: 0
-                  maximum: 128
-                  default: 0
-                cpuunits:
-                  type: integer
-                  default: 1024
-                  minimum: 2
-                  maximum: 262144
-                description:
-                  type: string
-                efidisk0:
-                  type: string
-                force:
-                  type: boolean
-                freeze:
-                  type: boolean
-                hookscript:
-                  type: string
-                hostpci0:
-                  type: string
-                hotplug:
-                  type: string
-                hugepages:
-                  type: string
-                  enum:
-                    - any
-                    - '2'
-                    - '1024'
-                ide0:
-                  type: string
-                ipconfig0:
-                  type: string
-                ivshmem:
-                  type: string
-                keephugepages:
-                  type: boolean
-                  default: false
-                keyboard:
-                  type: string
-                  enum:
-                    - de
-                    - de-ch
-                    - da
-                    - en-gb
-                    - en-us
-                    - es
-                    - fi
-                    - fr
-                    - fr-be
-                    - fr-ca
-                    - fr-ch
-                    - hu
-                    - is
-                    - it
-                    - ja
-                    - lt
-                    - mk
-                    - nl
-                    - 'no'
-                    - pl
-                    - pt
-                    - pt-br
-                    - sv
-                    - sl
-                    - tr
-                kvm:
-                  type: boolean
-                  default: true
-                live-restore:
-                  type: boolean
-                localtime:
-                  type: boolean
-                lock:
-                  type: string
-                  enum:
-                    - backup
-                    - clone
-                    - create
-                    - migrate
-                    - rollback
-                    - snapshot
-                    - snapshot-delete
-                    - suspending
-                    - suspended
-                machine:
-                  type: string
-                memory:
-                  type: integer
-                  minimum: 16
-                  default: 512
-                  exclusiveMaximum: false
-                  description: Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
-                migrate_downtime:
-                  type: number
-                  default: 0.1
-                  minimum: 0
-                migrate_speed:
-                  type: integer
-                  default: 0
-                  minimum: 0
-                name:
-                  type: string
-                nameserver:
-                  type: string
-                net0:
-                  type: string
-                numa:
-                  type: boolean
-                  default: false
-                numa0:
-                  type: string
-                onboot:
-                  type: boolean
-                  default: false
-                ostype:
-                  type: string
-                  enum:
-                    - other
-                    - wxp
-                    - w2k
-                    - w2k3
-                    - w2k8
-                    - wvista
-                    - win7
-                    - win8
-                    - l24
-                    - l26
-                    - solaris
-                parallel0:
-                  type: string
-                pool:
-                  type: string
-                protection:
-                  type: boolean
-                  default: false
-                reboot:
-                  type: boolean
-                  default: true
-                rng0:
-                  type: string
-                sata0:
-                  type: string
-                sata1:
-                  type: string
-                sata2:
-                  type: string
-                scsi0:
-                  type: string
-                scsi1:
-                  type: string
-                scsi2:
-                  type: string
-                scsihw:
-                  type: string
-                  enum:
-                    - lsi
-                    - lsi53c810
-                    - virtio-scsi-pci
-                    - virtio-scsi-single
-                    - megasas
-                    - pvscsi
-                  default: lsi
-                searchdomain:
-                  type: string
-                serial0:
-                  type: string
-                shares:
-                  type: integer
-                  minimum: 0
-                  maximum: 50000
-                  default: 1000
-                smbios1:
-                  type: string
-                smp:
-                  type: integer
-                  default: 1
-                  minimum: 1
-                sockets:
-                  type: integer
-                  default: 1
-                  minimum: 1
-                spice_enhancements:
-                  type: string
-                sshkeys:
-                  type: string
-                start:
-                  type: boolean
-                  default: false
-                startdate:
-                  type: string
-                  default: now
-                startup:
-                  type: string
-                storage:
-                  type: string
-                tablet:
-                  type: boolean
-                  default: true
-                tags:
-                  type: string
-                tdf:
-                  type: boolean
-                  default: false
-                template:
-                  type: boolean
-                  default: false
-                unique:
-                  type: boolean
-                unused0:
-                  type: string
-                usb0:
-                  type: string
-                usb1:
-                  type: string
-                usb2:
-                  type: string
-                usb3:
-                  type: string
-                usb4:
-                  type: string
-                vcpus:
-                  type: integer
-                  default: 0
-                  minimum: 0
-                vga:
-                  type: string
-                virtio0:
-                  type: string
-                virtio1:
-                  type: string
-                virtio2:
-                  type: string
-                vmgenid:
-                  type: string
-                vmstatestorage:
-                  type: string
-                watchdog:
-                  type: string
-  '/nodes/{node}/storage/{storage}/content/{volume}':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: storage
-        in: path
-        required: true
-      - schema:
-          type: string
-        name: volume
-        in: path
-        required: true
-    get:
-      summary: Get volume attributes
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      used:
-                        type: string
-                        minLength: 1
-                      size:
-                        type: string
-                        minLength: 1
-                      notes:
-                        type: string
-                      path:
-                        type: string
-                        minLength: 1
-                      format:
-                        type: string
-                        minLength: 1
-                    required:
-                      - used
-                      - size
-                      - notes
-                      - path
-                      - format
-                required:
-                  - data
-                x-examples:
-                  example-1:
-                    data:
-                      used: '667683840'
-                      size: '687865856'
-                      notes: ''
-                      path: /mnt/pve/isos/template/iso/archlinux-2020.01.01-x86_64.iso
-                      format: raw
-      operationId: get-volume-attributes
-      description: Get volume attributes
-      parameters: []
-      security:
-        - Authorization: []
-    put:
-      summary: Update volume attributes
-      tags: []
-      operationId: put-volume-attributes
-      responses:
-        '200':
-          description: OK
-      description: Update volume attributes
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                notes:
-                  type: string
-      security:
-        - Authorization: []
-    delete:
-      summary: Delete volume
-      tags: []
-      operationId: delete-volume
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: string
-      description: Delete a volume
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                delay:
-                  type: integer
-                  minimum: 1
-                  maximum: 30
-      security:
-        - Authorization: []
-  '/nodes/{node}/qemu/{vmid}':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-      - schema:
-          type: integer
-          minimum: 1
-        name: vmid
-        in: path
-        required: true
-    get:
-      summary: List vm operations
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    subdir:
-                      type: string
-      operationId: get-vm-operations
-      description: List the endpoints available to perform operations on this vm
-      security:
-        - Authorization: []
-    delete:
-      summary: Destroy VM
-      tags: []
-      operationId: delete-vm
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: string
-      description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                destroy-unreferenced-disks:
-                  type: boolean
-                  default: false
-                purge:
-                  type: boolean
-                skiplock:
-                  type: boolean
-      security:
-        - Authorization: []
   /cluster/nextid:
     get:
       summary: Get next free VM Id
@@ -1111,15 +120,9 @@ paths:
           name: vmid
       security:
         - Authorization: []
-  '/nodes/{node}/disks/zfs':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
+  /cluster/replication:
     get:
-      summary: List Zpools
+      summary: List Replication Jobs
       tags: []
       responses:
         '200':
@@ -1129,173 +132,73 @@ paths:
               schema:
                 description: ''
                 type: object
-                x-examples:
-                  example-1:
-                    data:
-                      - health: ONLINE
-                        free: 2053574369280
-                        alloc: 935722868736
-                        size: 2989297238016
-                        name: spool
-                        frag: 42
-                        dedup: 1
-                      - frag: 24
-                        name: tank1
-                        dedup: 1
-                        size: 59923383713792
-                        alloc: 53005751697408
-                        free: 6917632016384
-                        health: ONLINE
                 properties:
                   data:
                     type: array
                     uniqueItems: true
                     minItems: 1
                     items:
-                      type: object
-                      properties:
-                        health:
-                          type: string
-                          minLength: 1
-                        free:
-                          type: integer
-                        alloc:
-                          type: integer
-                        size:
-                          type: integer
-                        name:
-                          type: string
-                          minLength: 1
-                        frag:
-                          type: integer
-                        dedup:
-                          type: number
                       required:
-                        - health
-                        - free
-                        - alloc
-                        - size
-                        - name
-                        - frag
-                        - dedup
-                required:
-                  - data
-      operationId: get-zpools
-      description: List Zpools
-      security:
-        - Authorization: []
-    post:
-      summary: Create Zpool
-      tags: []
-      operationId: post-zpool
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-      description: Create a ZFS pool
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                devices:
-                  type: string
-                name:
-                  type: string
-                raidlevel:
-                  type: string
-                  enum:
-                    - single
-                    - mirror
-                    - raid10
-                    - raidz
-                    - raidz2
-                    - raidz3
-                add_storage:
-                  type: boolean
-                  default: false
-                  description: Configure storage using the zpool
-                ashift:
-                  type: integer
-                  minimum: 9
-                  maximum: 16
-                  default: 12
-                  description: Pool sector size exponent
-                compression:
-                  type: string
-                  enum:
-                    - 'on'
-                    - 'off'
-                    - gzip
-                    - lz4
-                    - lzjb
-                    - zle
-                  default: 'on'
-              required:
-                - devices
-                - name
-                - raidlevel
-  '/nodes/{node}/disks/directory':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-    get:
-      summary: Get directory storages
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
+                        - jobnum
+                        - source
+                        - id
+                        - type
+                        - target
+                        - guest
                       properties:
-                        device:
+                        jobnum:
                           type: string
-                        options:
+                          minLength: 1
+                        source:
                           type: string
-                        path:
+                          minLength: 1
+                        id:
                           type: string
+                          minLength: 1
                         type:
                           type: string
-                        unitfile:
+                          minLength: 1
+                        target:
                           type: string
-      operationId: get-directories
-      description: PVE Managed Directory storages.
+                          minLength: 1
+                        guest:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - jobnum: '0'
+                        source: zeus
+                        id: 101-0
+                        type: local
+                        target: herra
+                        guest: '101'
+                      - id: 110-0
+                        target: herra
+                        type: local
+                        source: zeus
+                        jobnum: '0'
+                        guest: '110'
+                      - guest: '114'
+                        target: herra
+                        type: local
+                        id: 114-0
+                        source: zeus
+                        jobnum: '0'
+      operationId: list-replication
+      description: List replication jobs
       security:
         - Authorization: []
     post:
-      summary: Create Directory
+      summary: Create Replication Job
       tags: []
-      operationId: post-directory
+      operationId: post-replication
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+      description: Create a new replication job
       security:
         - Authorization: []
       requestBody:
@@ -1304,29 +207,45 @@ paths:
             schema:
               type: object
               properties:
-                device:
+                id:
                   type: string
-                name:
+                  description: 'Replication Job ID. The ID is composed of a Guest ID and a job number, separated by a hyphen, i.e. ''<GUEST>-<JOBNUM>''.'
+                target:
                   type: string
-                add_storage:
-                  type: boolean
-                  default: false
-                  description: Configure storage using the directory
-                filesystem:
+                type:
                   type: string
                   enum:
-                    - ext4
-                    - xfs
-                  description: The desired filesystem
-  '/nodes/{node}/disks/lvm':
+                    - local
+                comment:
+                  type: string
+                disable:
+                  type: boolean
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
+                  type: string
+                  enum:
+                    - local
+                    - full
+                schedule:
+                  type: string
+                  default: '*/15'
+                source:
+                  type: string
+              required:
+                - id
+                - target
+                - type
+  '/cluster/replication/{id}':
     parameters:
       - schema:
           type: string
-        name: node
+        name: id
         in: path
         required: true
     get:
-      summary: List LVM Volume Groups
+      summary: Get Replication Job Configuration
       tags: []
       responses:
         '200':
@@ -1340,79 +259,55 @@ paths:
                   data:
                     type: object
                     properties:
-                      children:
-                        type: array
-                        uniqueItems: true
-                        minItems: 1
-                        items:
-                          required:
-                            - free
-                            - size
-                            - lvcount
-                            - leaf
-                            - name
-                          properties:
-                            free:
-                              type: number
-                            size:
-                              type: number
-                            lvcount:
-                              type: number
-                            leaf:
-                              type: number
-                            name:
-                              type: string
-                              minLength: 1
-                            children:
-                              type: array
-                              uniqueItems: true
-                              minItems: 1
-                              items:
-                                required:
-                                  - name
-                                  - leaf
-                                  - free
-                                  - size
-                                properties:
-                                  name:
-                                    type: string
-                                    minLength: 1
-                                  leaf:
-                                    type: number
-                                  free:
-                                    type: number
-                                  size:
-                                    type: number
-                      leaf:
-                        type: number
+                      jobnum:
+                        type: string
+                        minLength: 1
+                      digest:
+                        type: string
+                        minLength: 1
+                      source:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      target:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: string
+                        minLength: 1
+                      guest:
+                        type: string
+                        minLength: 1
                     required:
-                      - children
-                      - leaf
+                      - jobnum
+                      - digest
+                      - source
+                      - type
+                      - target
+                      - id
+                      - guest
                 required:
                   - data
                 x-examples:
                   example-1:
                     data:
-                      children:
-                        - free: 17179869184
-                          size: 249519144960
-                          lvcount: 9
-                          leaf: 0
-                          name: pve
-                          children:
-                            - name: /dev/sdi3
-                              leaf: 1
-                              free: 17179869184
-                              size: 249519144960
-                      leaf: 0
-      operationId: get-lvm-groups
-      description: List LVM Volume Groups
+                      jobnum: '0'
+                      digest: cf4b401a358cc3da20b7ddfffbed4b71fbcf8b65
+                      source: zeus
+                      type: local
+                      target: herra
+                      id: 101-0
+                      guest: '101'
+      operationId: get-replication
+      description: Read replication job configuration
       security:
         - Authorization: []
-    post:
-      summary: Create an LVM Volume Group
+    put:
+      summary: Update Replication Job Configuration
       tags: []
-      operationId: post-lvm-group
+      operationId: put-replication
       responses:
         '200':
           description: OK
@@ -1421,128 +316,71 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                    type: string
-                required:
-                  - data
-      description: Create an LVM Volume group
+                  data: {}
       security:
         - Authorization: []
+      description: Update replication job configuration
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
-                device:
+                comment:
                   type: string
-                name:
+                delete:
                   type: string
-                add_storage:
+                digest:
+                  type: string
+                disable:
                   type: boolean
-                  default: false
-              required:
-                - device
-                - name
-  '/nodes/{node}/disks/lvmthin':
-    parameters:
-      - schema:
-          type: string
-        name: node
-        in: path
-        required: true
-    get:
-      summary: List LVM Thin Pools
-      tags: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                description: ''
-                type: object
-                x-examples:
-                  example-1:
-                    data:
-                      - lv: data
-                        metadata_size: 1614807040
-                        lv_type: t
-                        used: 15824270
-                        metadata_used: 17601396
-                        lv_size: 158242701312
-                        ctime: '1598546904'
-                properties:
-                  data:
-                    type: array
-                    uniqueItems: true
-                    minItems: 1
-                    items:
-                      type: object
-                      properties:
-                        lv:
-                          type: string
-                          minLength: 1
-                        metadata_size:
-                          type: integer
-                        lv_type:
-                          type: string
-                          minLength: 1
-                        used:
-                          type: integer
-                        metadata_used:
-                          type: integer
-                        lv_size:
-                          type: integer
-                        ctime:
-                          type: string
-                          minLength: 1
-                      required:
-                        - lv
-                        - metadata_size
-                        - lv_type
-                        - used
-                        - metadata_used
-                        - lv_size
-                        - ctime
-                required:
-                  - data
-      operationId: get-nlvmthin-pools
-      description: List LVM thinpools
-      security:
-        - Authorization: []
-    post:
-      summary: Create an LVM Thin Pool
-      tags: []
-      operationId: post-nodes-node-disks-lvmthin
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-      description: Create an LVM thinpool
-      security:
-        - Authorization: []
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                device:
+                rate:
+                  type: number
+                  minimum: 1
+                remove_job:
                   type: string
-                name:
+                  enum:
+                    - local
+                    - full
+                schedule:
                   type: string
-                add_storage:
-                  type: boolean
-                  default: false
-                  description: Configure storage using the thinpool
+                  default: '*/15'
+                soruce:
+                  type: string
         description: ''
+    delete:
+      summary: Delete Replication Job
+      tags: []
+      operationId: delete-replication
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      description: Mark replication job for removal
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: force
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: keep
   '/nodes/{node}/ceph/pools':
     parameters:
       - schema:
@@ -2002,18 +840,2032 @@ paths:
       description: Destroy pool
       security:
         - Authorization: []
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: force
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: remove_storage
+  '/nodes/{node}/disks/directory':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: Get directory storages
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        device:
+                          type: string
+                        options:
+                          type: string
+                        path:
+                          type: string
+                        type:
+                          type: string
+                        unitfile:
+                          type: string
+      operationId: get-directories
+      description: PVE Managed Directory storages.
+      security:
+        - Authorization: []
+    post:
+      summary: Create Directory
+      tags: []
+      operationId: post-directory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create a Filesystem on an unused disk. Will be mounted under '/mnt/pve/NAME'.
+      security:
+        - Authorization: []
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the directory
+                filesystem:
+                  type: string
+                  enum:
+                    - ext4
+                    - xfs
+                  description: The desired filesystem
+  '/nodes/{node}/disks/lvm':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Volume Groups
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      children:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          required:
+                            - free
+                            - size
+                            - lvcount
+                            - leaf
+                            - name
+                          properties:
+                            free:
+                              type: number
+                            size:
+                              type: number
+                            lvcount:
+                              type: number
+                            leaf:
+                              type: number
+                            name:
+                              type: string
+                              minLength: 1
+                            children:
+                              type: array
+                              uniqueItems: true
+                              minItems: 1
+                              items:
+                                required:
+                                  - name
+                                  - leaf
+                                  - free
+                                  - size
+                                properties:
+                                  name:
+                                    type: string
+                                    minLength: 1
+                                  leaf:
+                                    type: number
+                                  free:
+                                    type: number
+                                  size:
+                                    type: number
+                      leaf:
+                        type: number
+                    required:
+                      - children
+                      - leaf
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      children:
+                        - free: 17179869184
+                          size: 249519144960
+                          lvcount: 9
+                          leaf: 0
+                          name: pve
+                          children:
+                            - name: /dev/sdi3
+                              leaf: 1
+                              free: 17179869184
+                              size: 249519144960
+                      leaf: 0
+      operationId: get-lvm-groups
+      description: List LVM Volume Groups
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Volume Group
+      tags: []
+      operationId: post-lvm-group
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Create an LVM Volume group
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+              required:
+                - device
+                - name
+  '/nodes/{node}/disks/lvmthin':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List LVM Thin Pools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - lv: data
+                        metadata_size: 1614807040
+                        lv_type: t
+                        used: 15824270
+                        metadata_used: 17601396
+                        lv_size: 158242701312
+                        ctime: '1598546904'
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        lv:
+                          type: string
+                          minLength: 1
+                        metadata_size:
+                          type: integer
+                        lv_type:
+                          type: string
+                          minLength: 1
+                        used:
+                          type: integer
+                        metadata_used:
+                          type: integer
+                        lv_size:
+                          type: integer
+                        ctime:
+                          type: string
+                          minLength: 1
+                      required:
+                        - lv
+                        - metadata_size
+                        - lv_type
+                        - used
+                        - metadata_used
+                        - lv_size
+                        - ctime
+                required:
+                  - data
+      operationId: get-nlvmthin-pools
+      description: List LVM thinpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create an LVM Thin Pool
+      tags: []
+      operationId: post-nodes-node-disks-lvmthin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create an LVM thinpool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+                name:
+                  type: string
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the thinpool
+        description: ''
+  '/nodes/{node}/disks/zfs':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: List Zpools
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    data:
+                      - health: ONLINE
+                        free: 2053574369280
+                        alloc: 935722868736
+                        size: 2989297238016
+                        name: spool
+                        frag: 42
+                        dedup: 1
+                      - frag: 24
+                        name: tank1
+                        dedup: 1
+                        size: 59923383713792
+                        alloc: 53005751697408
+                        free: 6917632016384
+                        health: ONLINE
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        health:
+                          type: string
+                          minLength: 1
+                        free:
+                          type: integer
+                        alloc:
+                          type: integer
+                        size:
+                          type: integer
+                        name:
+                          type: string
+                          minLength: 1
+                        frag:
+                          type: integer
+                        dedup:
+                          type: number
+                      required:
+                        - health
+                        - free
+                        - alloc
+                        - size
+                        - name
+                        - frag
+                        - dedup
+                required:
+                  - data
+      operationId: get-zpools
+      description: List Zpools
+      security:
+        - Authorization: []
+    post:
+      summary: Create Zpool
+      tags: []
+      operationId: post-zpool
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Create a ZFS pool
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                devices:
+                  type: string
+                name:
+                  type: string
+                raidlevel:
+                  type: string
+                  enum:
+                    - single
+                    - mirror
+                    - raid10
+                    - raidz
+                    - raidz2
+                    - raidz3
+                add_storage:
+                  type: boolean
+                  default: false
+                  description: Configure storage using the zpool
+                ashift:
+                  type: integer
+                  minimum: 9
+                  maximum: 16
+                  default: 12
+                  description: Pool sector size exponent
+                compression:
+                  type: string
+                  enum:
+                    - 'on'
+                    - 'off'
+                    - gzip
+                    - lz4
+                    - lzjb
+                    - zle
+                  default: 'on'
+              required:
+                - devices
+                - name
+                - raidlevel
+  '/nodes/{node}/qemu':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+    get:
+      summary: VM Index
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - maxmem
+                        - diskwrite
+                        - cpu
+                        - vmid
+                        - name
+                        - pid
+                        - uptime
+                        - netout
+                        - diskread
+                        - cpus
+                        - netin
+                        - status
+                        - maxdisk
+                        - disk
+                        - mem
+                      properties:
+                        maxmem:
+                          type: number
+                        diskwrite:
+                          type: number
+                        cpu:
+                          type: number
+                        vmid:
+                          type: number
+                        name:
+                          type: string
+                          minLength: 1
+                        pid:
+                          type: number
+                        uptime:
+                          type: number
+                        netout:
+                          type: number
+                        diskread:
+                          type: number
+                        cpus:
+                          type: number
+                        netin:
+                          type: number
+                        status:
+                          type: string
+                          minLength: 1
+                        maxdisk:
+                          type: number
+                        disk:
+                          type: number
+                        mem:
+                          type: number
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - maxmem: 8589934592
+                        diskwrite: 0
+                        cpu: 0
+                        vmid: 130
+                        name: cf-zeus
+                        pid: 65378
+                        uptime: 368136
+                        netout: 3463886720
+                        diskread: 0
+                        cpus: 8
+                        netin: 4196923685
+                        status: running
+                        maxdisk: 53687091200
+                        disk: 0
+                        mem: 2954544168
+                      - mem: 7012551905
+                        disk: 0
+                        cpus: 16
+                        diskread: 0
+                        netin: 87605227798
+                        status: running
+                        maxdisk: 214748364800
+                        uptime: 368165
+                        pid: 7638
+                        netout: 10769210013
+                        maxmem: 8589934592
+                        diskwrite: 0
+                        cpu: 0
+                        name: plex
+                        vmid: 114
+                      - maxmem: 8589934592
+                        diskwrite: 0
+                        cpu: 0
+                        name: kube-worker-zeus01
+                        vmid: 117
+                        uptime: 368161
+                        pid: 7927
+                        netout: 27148925699
+                        cpus: 4
+                        diskread: 0
+                        netin: 9776137147
+                        maxdisk: 53687091200
+                        status: running
+                        mem: 3813369932
+                        disk: 0
+                      - netin: 0
+                        status: stopped
+                        maxdisk: 134217728000
+                        diskread: 0
+                        cpus: 16
+                        mem: 0
+                        disk: 0
+                        name: mediabox
+                        vmid: 101
+                        maxmem: 17179869184
+                        diskwrite: 0
+                        cpu: 0
+                        netout: 0
+                        uptime: 0
+                      - mem: 1473323921
+                        disk: 0
+                        status: running
+                        maxdisk: 107374182400
+                        netin: 9800668684
+                        cpus: 4
+                        diskread: 0
+                        netout: 3766862058
+                        uptime: 368169
+                        pid: 7516
+                        name: 2plex
+                        vmid: 110
+                        cpu: 0
+                        maxmem: 2147483648
+                        diskwrite: 0
+                      - maxmem: 8589934592
+                        diskwrite: 0
+                        cpu: 0
+                        name: kube-worker-zeus02
+                        vmid: 126
+                        uptime: 368141
+                        pid: 54676
+                        netout: 4273868242
+                        diskread: 0
+                        cpus: 4
+                        netin: 7713974085
+                        maxdisk: 53687091200
+                        status: running
+                        mem: 3281715123
+                        disk: 0
+                      - disk: 0
+                        mem: 2382452360
+                        cpus: 4
+                        diskread: 0
+                        netin: 5751144509
+                        maxdisk: 34359738368
+                        status: running
+                        pid: 20730
+                        uptime: 368151
+                        netout: 2697793554
+                        diskwrite: 0
+                        maxmem: 4294967296
+                        cpu: 0
+                        vmid: 122
+                        name: kube-stor-zeus01
+                      - name: kube-ctrl-zeus
+                        vmid: 123
+                        cpu: 0
+                        maxmem: 4294967296
+                        diskwrite: 0
+                        netout: 98131700679
+                        uptime: 368146
+                        pid: 35391
+                        status: running
+                        maxdisk: 34359738368
+                        netin: 73812275872
+                        cpus: 4
+                        diskread: 0
+                        mem: 3421381247
+                        disk: 0
+                      - pid: 10552
+                        uptime: 368156
+                        netout: 4143064458
+                        diskwrite: 0
+                        maxmem: 4294967296
+                        cpu: 0
+                        vmid: 121
+                        name: kube-stor-zeus02
+                        disk: 0
+                        mem: 2250329739
+                        cpus: 4
+                        diskread: 0
+                        netin: 7515938315
+                        maxdisk: 34359738368
+                        status: running
+      operationId: get-node-qemu
+      description: Virtual machine index (per node).
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: full
+          description: Determine the full status of active VMs
+    post:
+      summary: Create VM
+      tags: []
+      operationId: post-node-qemu
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      security:
+        - Authorization: []
+      parameters: []
+      description: Create or restore a virtual machine
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                vmid:
+                  type: integer
+                acpi:
+                  type: boolean
+                  default: true
+                agent:
+                  type: string
+                  example: '[enaled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]'
+                arch:
+                  type: string
+                archive:
+                  type: string
+                args:
+                  type: string
+                audio0:
+                  type: string
+                autostart:
+                  type: boolean
+                balloon:
+                  type: integer
+                  minimum: 0
+                  description: Amount of target RAM for the VM in MB. Using zero disables the balloon driver.
+                bios:
+                  type: string
+                  enum:
+                    - seabios
+                    - ovmf
+                  default: seabios
+                boot:
+                  type: string
+                bootdisk:
+                  type: string
+                bwlimit:
+                  type: integer
+                  minimum: 0
+                  description: Overrid I/O bandwitdh limit (in KiB/s).
+                cdrom:
+                  type: string
+                cicustom:
+                  type: string
+                cipassword:
+                  type: string
+                citype:
+                  type: string
+                  enum:
+                    - configdrive2
+                    - nocloud
+                    - opennebula
+                  description: 'Specifies the cloud-init configuration format. The default depends on the confiugred operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows).'
+                ciuser:
+                  type: string
+                cores:
+                  type: integer
+                  minimum: 1
+                  default: 1
+                cpu:
+                  type: string
+                cpulimit:
+                  type: number
+                  minimum: 0
+                  maximum: 128
+                  default: 0
+                cpuunits:
+                  type: integer
+                  default: 1024
+                  minimum: 2
+                  maximum: 262144
+                description:
+                  type: string
+                efidisk0:
+                  type: string
                 force:
                   type: boolean
-                  default: false
-                remove_storage:
+                freeze:
+                  type: boolean
+                hookscript:
+                  type: string
+                hostpci0:
+                  type: string
+                hotplug:
+                  type: string
+                hugepages:
+                  type: string
+                  enum:
+                    - any
+                    - '2'
+                    - '1024'
+                ide0:
+                  type: string
+                ipconfig0:
+                  type: string
+                ivshmem:
+                  type: string
+                keephugepages:
                   type: boolean
                   default: false
+                keyboard:
+                  type: string
+                  enum:
+                    - de
+                    - de-ch
+                    - da
+                    - en-gb
+                    - en-us
+                    - es
+                    - fi
+                    - fr
+                    - fr-be
+                    - fr-ca
+                    - fr-ch
+                    - hu
+                    - is
+                    - it
+                    - ja
+                    - lt
+                    - mk
+                    - nl
+                    - 'no'
+                    - pl
+                    - pt
+                    - pt-br
+                    - sv
+                    - sl
+                    - tr
+                kvm:
+                  type: string
+                  default: '0'
+                  enum:
+                    - '0'
+                    - '1'
+                live-restore:
+                  type: boolean
+                localtime:
+                  type: boolean
+                lock:
+                  type: string
+                  enum:
+                    - backup
+                    - clone
+                    - create
+                    - migrate
+                    - rollback
+                    - snapshot
+                    - snapshot-delete
+                    - suspending
+                    - suspended
+                machine:
+                  type: string
+                memory:
+                  type: integer
+                  minimum: 16
+                  default: 512
+                  exclusiveMaximum: false
+                  description: Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+                migrate_downtime:
+                  type: number
+                  default: 0.1
+                  minimum: 0
+                migrate_speed:
+                  type: integer
+                  default: 0
+                  minimum: 0
+                name:
+                  type: string
+                nameserver:
+                  type: string
+                net0:
+                  type: string
+                numa:
+                  type: boolean
+                  default: false
+                numa0:
+                  type: string
+                onboot:
+                  type: string
+                  default: '0'
+                  enum:
+                    - '0'
+                    - '1'
+                ostype:
+                  type: string
+                  enum:
+                    - other
+                    - wxp
+                    - w2k
+                    - w2k3
+                    - w2k8
+                    - wvista
+                    - win7
+                    - win8
+                    - l24
+                    - l26
+                    - solaris
+                parallel0:
+                  type: string
+                pool:
+                  type: string
+                protection:
+                  type: boolean
+                  default: false
+                reboot:
+                  type: boolean
+                  default: true
+                rng0:
+                  type: string
+                sata0:
+                  type: string
+                sata1:
+                  type: string
+                sata2:
+                  type: string
+                scsi0:
+                  type: string
+                scsi1:
+                  type: string
+                scsi2:
+                  type: string
+                scsihw:
+                  type: string
+                  enum:
+                    - lsi
+                    - lsi53c810
+                    - virtio-scsi-pci
+                    - virtio-scsi-single
+                    - megasas
+                    - pvscsi
+                  default: lsi
+                searchdomain:
+                  type: string
+                serial0:
+                  type: string
+                shares:
+                  type: integer
+                  minimum: 0
+                  maximum: 50000
+                  default: 1000
+                smbios1:
+                  type: string
+                smp:
+                  type: integer
+                  default: 1
+                  minimum: 1
+                sockets:
+                  type: integer
+                  default: 1
+                  minimum: 1
+                spice_enhancements:
+                  type: string
+                sshkeys:
+                  type: string
+                start:
+                  type: boolean
+                  default: false
+                startdate:
+                  type: string
+                  default: now
+                startup:
+                  type: string
+                storage:
+                  type: string
+                tablet:
+                  type: boolean
+                  default: true
+                tags:
+                  type: string
+                tdf:
+                  type: boolean
+                  default: false
+                template:
+                  type: boolean
+                  default: false
+                unique:
+                  type: boolean
+                unused0:
+                  type: string
+                usb0:
+                  type: string
+                usb1:
+                  type: string
+                usb2:
+                  type: string
+                usb3:
+                  type: string
+                usb4:
+                  type: string
+                vcpus:
+                  type: integer
+                  default: 0
+                  minimum: 0
+                vga:
+                  type: string
+                virtio0:
+                  type: string
+                virtio1:
+                  type: string
+                virtio2:
+                  type: string
+                vmgenid:
+                  type: string
+                vmstatestorage:
+                  type: string
+                watchdog:
+                  type: string
+              required:
+                - vmid
+  '/nodes/{node}/qemu/{vmid}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: integer
+          minimum: 1
+        name: vmid
+        in: path
+        required: true
+    get:
+      summary: List vm operations
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    subdir:
+                      type: string
+      operationId: get-vm-operations
+      description: List the endpoints available to perform operations on this vm
+      security:
+        - Authorization: []
+    delete:
+      summary: Destroy VM
+      tags: []
+      operationId: delete-vm
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Destroy the VM and all used/owned volumes. Removes any VM specific permissions and firewall rules.
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: destroy-unreferenced-disks
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          in: query
+          name: purge
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+          in: query
+          name: skiplock
+  '/nodes/{node}/qemu/{vmid}/config':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: integer
+        name: vmid
+        in: path
+        required: true
+    get:
+      summary: Get VM Config
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VmConfig'
+                required:
+                  - data
+      operationId: get-vm-config
+      description: Get the virtual machine configuration with pending configuration changes applied. Set the 'current' parameter to get the current configuration instead.
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - '0'
+              - '1'
+            default: '0'
+          in: query
+          name: current
+          description: Get current values (instead of pending values)
+        - schema:
+            type: string
+          in: query
+          name: snapshot
+          description: Fetch config values from given snapshot
+    post:
+      summary: Set VM Options
+      operationId: post-vm-config
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      description: Set virtual machine options (asynchronous API).
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VmConfig'
+        description: ''
+  '/nodes/{node}/storage/{storage}/content':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    get:
+      summary: List storage content
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        format:
+                          type: string
+                        size:
+                          type: integer
+                        volid:
+                          type: string
+                        ctime:
+                          type: integer
+                        encrypted:
+                          type: string
+                        notes:
+                          type: string
+                        parent:
+                          type: string
+                        used:
+                          type: integer
+                        verification:
+                          type: object
+                        vmid:
+                          type: integer
+                      required:
+                        - format
+                        - size
+                        - volid
+      operationId: list-node-storage-content
+      description: List storage content
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                vmid:
+                  type: integer
+                  minimum: 1
+  '/nodes/{node}/storage/{storage}/content/{volume}':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: volume
+        in: path
+        required: true
+    get:
+      summary: Get volume attributes
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      used:
+                        type: string
+                        minLength: 1
+                      size:
+                        type: string
+                        minLength: 1
+                      notes:
+                        type: string
+                      path:
+                        type: string
+                        minLength: 1
+                      format:
+                        type: string
+                        minLength: 1
+                    required:
+                      - used
+                      - size
+                      - notes
+                      - path
+                      - format
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      used: '667683840'
+                      size: '687865856'
+                      notes: ''
+                      path: /mnt/pve/isos/template/iso/archlinux-2020.01.01-x86_64.iso
+                      format: raw
+      operationId: get-volume-attributes
+      description: Get volume attributes
+      parameters: []
+      security:
+        - Authorization: []
+    put:
+      summary: Update volume attributes
+      tags: []
+      operationId: put-volume-attributes
+      responses:
+        '200':
+          description: OK
+      description: Update volume attributes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+      security:
+        - Authorization: []
+    delete:
+      summary: Delete volume
+      tags: []
+      operationId: delete-volume
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+      description: Delete a volume
+      security:
+        - Authorization: []
+      parameters:
+        - schema:
+            type: integer
+            minimum: 0
+            maximum: 30
+          in: query
+          name: delay
+  '/nodes/{node}/storage/{storage}/download-url':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    post:
+      summary: Download Url
+      tags: []
+      operationId: post-download-url
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                required:
+                  - data
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                content:
+                  $ref: '#/components/schemas/ContentType'
+                filename:
+                  type: string
+                url:
+                  type: string
+                checksum:
+                  type: string
+                checksum-algorithm:
+                  $ref: '#/components/schemas/ChecksumAlgorithm'
+                verify-certificates:
+                  type: boolean
+              required:
+                - content
+                - filename
+                - url
+      description: Download templates and ISO images by using an URL
+      security:
+        - Authorization: []
+  '/nodes/{node}/tasks/{upid}/status':
+    parameters:
+      - schema:
+          type: string
+        name: node
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: upid
+        in: path
+        required: true
+    get:
+      summary: Read Task Status
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      node:
+                        type: string
+                        minLength: 1
+                      status:
+                        type: string
+                        minLength: 1
+                      exitstatus:
+                        type: string
+                        minLength: 1
+                      tokenid:
+                        type: string
+                        minLength: 1
+                      upid:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      id:
+                        type: string
+                        minLength: 1
+                      starttime:
+                        type: number
+                      pid:
+                        type: number
+                      user:
+                        type: string
+                        minLength: 1
+                      pstart:
+                        type: number
+                    required:
+                      - node
+                      - status
+                      - exitstatus
+                      - tokenid
+                      - upid
+                      - type
+                      - id
+                      - starttime
+                      - pid
+                      - user
+                      - pstart
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      node: zeus
+                      status: stopped
+                      exitstatus: OK
+                      tokenid: pulumi-dev
+                      upid: 'UPID:zeus:001F6417:02CFF9DA:61611FDB:download:k3os-amd64-dev.iso:root@pam!pulumi-dev:'
+                      type: download
+                      id: k3os-amd64-dev.iso
+                      starttime: 1633755099
+                      pid: 2057239
+                      user: root@pam
+                      pstart: 47184346
+      operationId: get-node-task-status
+      description: Read task status
+      security:
+        - Authorization: []
+  /storage:
+    get:
+      summary: Storage index
+      tags: []
+      operationId: list-storage
+      description: Storage index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - type
+                        - sparse
+                        - content
+                        - mountpoint
+                        - pool
+                        - digest
+                        - storage
+                        - nodes
+                      properties:
+                        type:
+                          type: string
+                          minLength: 1
+                        sparse:
+                          type: number
+                        content:
+                          type: string
+                          minLength: 1
+                        mountpoint:
+                          type: string
+                          minLength: 1
+                        pool:
+                          type: string
+                          minLength: 1
+                        digest:
+                          type: string
+                          minLength: 1
+                        storage:
+                          type: string
+                          minLength: 1
+                        nodes:
+                          type: string
+                          minLength: 1
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      - type: zfspool
+                        sparse: 0
+                        content: 'rootdir,images'
+                        mountpoint: /tank1/vm-data/limited
+                        pool: tank1/vm-data/limited
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-vm-data-limited
+                        nodes: 'zeus,apollo'
+                      - content: 'images,rootdir'
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        type: lvmthin
+                        vgname: pve
+                        thinpool: data
+                        storage: local-lvm
+                      - server: zeus
+                        type: nfs
+                        content: 'iso,vztmpl'
+                        storage: isos
+                        path: /mnt/pve/isos
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        shared: 1
+                        export: /tank1/media/isos
+                      - type: dir
+                        content: backup
+                        shared: 0
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: zfs-backup
+                        prune-backups: keep-last=1
+                        path: /tank1/backup
+                        nodes: 'zeus,apollo'
+                      - digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                        storage: spool
+                        type: zfspool
+                        sparse: 1
+                        content: 'rootdir,images'
+                        pool: spool
+                        mountpoint: /spool
+                      - path: /var/lib/vz
+                        storage: local
+                        content: 'vztmpl,backup,iso'
+                        type: dir
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                      - mountpoint: /tank1/vm-data
+                        pool: tank1/vm-data
+                        content: 'images,rootdir'
+                        sparse: 0
+                        type: zfspool
+                        nodes: 'zeus,apollo'
+                        storage: zfs-vm-data
+                        digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - btrfs
+              - cephfs
+              - cifs
+              - dir
+              - glusterfs
+              - iscsi
+              - iscsidirect
+              - lvm
+              - lvmthin
+              - nfs
+              - pbs
+              - rbd
+              - zfs
+              - zfspool
+          in: query
+          name: type
+          description: Only list storage of a specfic type
+      security:
+        - Authorization: []
+    post:
+      summary: Create Storage
+      tags: []
+      operationId: post-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: CreateStorageRequest
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      storage:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/StorageType'
+                      config:
+                        type: object
+                    required:
+                      - storage
+                      - type
+      description: Create a new storage
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              title: CreateStorageRequest
+              type: object
+              properties:
+                storage:
+                  type: string
+                  description: The storage identifier
+                type:
+                  $ref: '#/components/schemas/StorageType'
+                authsupported:
+                  type: string
+                  description: Is auth supported
+                base:
+                  type: string
+                  description: Base volume. This volume is automatically activated
+                blocksize:
+                  type: string
+                  description: Block size
+                bwlimit:
+                  type: string
+                  description: Set bandwidth/io limit for various operations
+                comstar_hg:
+                  type: string
+                  description: Host group for comstar views
+                comstart_tg:
+                  type: string
+                  description: Target group for comstar views
+                content:
+                  type: string
+                  description: |-
+                    Allowed content types.
+                    NOTE: The value 'rootdir' is used for containers and the value 'images' for VMs
+                datastore:
+                  type: string
+                  description: Proxmox Backup Server datastore name
+                disable:
+                  type: boolean
+                domain:
+                  type: string
+                encryption-key:
+                  type: string
+                export:
+                  type: string
+                fingerprint:
+                  type: string
+                format:
+                  type: string
+                fuse:
+                  type: string
+                is_mountpoint:
+                  type: string
+                  enum:
+                    - 'yes'
+                    - 'no'
+                  default: 'no'
+                iscsiprovider:
+                  type: string
+                krbd:
+                  type: boolean
+                lio_tpg:
+                  type: string
+                master-pubkey:
+                  type: string
+                maxfiles:
+                  type: integer
+                  minimum: 0
+                mkdir:
+                  type: boolean
+                  default: true
+                monhost:
+                  type: string
+                mountpoint:
+                  type: string
+                namespace:
+                  type: string
+                nocow:
+                  type: boolean
+                  default: false
+                nodes:
+                  type: string
+                nowritecache:
+                  type: boolean
+                options:
+                  type: string
+                password:
+                  type: string
+                path:
+                  type: string
+                pool:
+                  type: string
+                port:
+                  type: integer
+                  default: 8007
+                  minimum: 1
+                  maximum: 65535
+                portal:
+                  type: string
+                prune-backups:
+                  type: string
+                saferemove:
+                  type: boolean
+                saferemove_throughput:
+                  type: string
+                server:
+                  type: string
+                server2:
+                  type: string
+                share:
+                  type: string
+                shared:
+                  type: boolean
+                smbversion:
+                  type: string
+                  enum:
+                    - '2.0'
+                    - '2.1'
+                    - '3.0'
+                sparse:
+                  type: boolean
+                subdir:
+                  type: string
+                tagged_only:
+                  type: boolean
+                target:
+                  type: string
+                thinpool:
+                  type: string
+                transport:
+                  type: string
+                  enum:
+                    - tcp
+                    - rdma
+                    - unix
+                username:
+                  type: string
+                vgname:
+                  type: string
+                volume:
+                  type: string
+              required:
+                - storage
+                - type
+      security:
+        - Authorization: []
+  '/storage/{storage}':
+    parameters:
+      - schema:
+          type: string
+        name: storage
+        in: path
+        required: true
+    get:
+      summary: Get Storage Configuration
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      shared:
+                        type: number
+                      server:
+                        type: string
+                        minLength: 1
+                      export:
+                        type: string
+                        minLength: 1
+                      path:
+                        type: string
+                        minLength: 1
+                      type:
+                        type: string
+                        minLength: 1
+                      content:
+                        type: string
+                        minLength: 1
+                      digest:
+                        type: string
+                        minLength: 1
+                      storage:
+                        type: string
+                        minLength: 1
+                    required:
+                      - shared
+                      - server
+                      - export
+                      - path
+                      - type
+                      - content
+                      - digest
+                      - storage
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      shared: 1
+                      server: zeus
+                      export: /tank1/media/isos
+                      path: /mnt/pve/isos
+                      type: nfs
+                      content: 'iso,vztmpl'
+                      digest: 8b4476202e842c384a540e32fb35c426e6f156d1
+                      storage: isos
+      operationId: get-storage
+      description: Read storage configuration
+      security:
+        - Authorization: []
+    put:
+      summary: Update Storage Configuration
+      tags: []
+      operationId: put-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      storage:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/StorageType'
+                      config:
+                        type: object
+      description: Update storage configuration
+      security:
+        - Authorization: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                blocksize:
+                  type: string
+                bwlimit:
+                  type: string
+                comstart_hg:
+                  type: string
+                comstar_tg:
+                  type: string
+                content:
+                  type: string
+                delete:
+                  type: string
+                digest:
+                  type: string
+                disable:
+                  type: boolean
+                domain:
+                  type: string
+                encryption-key:
+                  type: string
+                fingerprint:
+                  type: string
+                format:
+                  type: string
+                fuse:
+                  type: boolean
+                is_mountpoint:
+                  type: string
+                  enum:
+                    - 'yes'
+                    - 'no'
+                krbd:
+                  type: boolean
+                lio_tpg:
+                  type: string
+                master-pubkey:
+                  type: string
+                maxfiles:
+                  type: integer
+                  minimum: 0
+                mkdir:
+                  type: boolean
+                  default: true
+                monhost:
+                  type: string
+                mountpoint:
+                  type: string
+                namespace:
+                  type: string
+                nocow:
+                  type: boolean
+                  default: false
+                nodes:
+                  type: string
+                nowritecache:
+                  type: boolean
+                options:
+                  type: string
+                password:
+                  type: string
+                pool:
+                  type: string
+                port:
+                  type: integer
+                  default: 8007
+                  minimum: 1
+                  maximum: 65535
+                prune-backups:
+                  type: string
+                saferemove:
+                  type: boolean
+                saferemove_throughput:
+                  type: string
+                server:
+                  type: string
+                server2:
+                  type: string
+                shared:
+                  type: boolean
+                smbversion:
+                  type: string
+                  enum:
+                    - '2.0'
+                    - '2.1'
+                    - '3.0'
+                sparse:
+                  type: boolean
+                subdir:
+                  type: string
+                tagged_only:
+                  type: boolean
+                transport:
+                  type: string
+                  enum:
+                    - tcp
+                    - rdma
+                    - unix
+                username:
+                  type: string
+    delete:
+      summary: Delete Storage Configuration
+      tags: []
+      operationId: delete-storage
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+      description: Delete storage configuration
+      security:
+        - Authorization: []
+  /version:
+    get:
+      summary: API version details
+      tags: []
+      operationId: get-version
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      repoid:
+                        type: string
+                        minLength: 1
+                      version:
+                        type: string
+                        minLength: 1
+                      keyboard:
+                        type: string
+                        minLength: 1
+                      release:
+                        type: string
+                        minLength: 1
+                    required:
+                      - repoid
+                      - version
+                      - keyboard
+                      - release
+                required:
+                  - data
+                x-examples:
+                  example-1:
+                    data:
+                      repoid: 63d82f4e
+                      version: 7.0-11
+                      keyboard: en-us
+                      release: '7.0'
+      description: API version details. The result also includes the global datacenter confguration.
 components:
   schemas:
     StorageType:
@@ -2051,6 +2903,311 @@ components:
         - sha256
         - sha384
         - sha512
+    VmConfig:
+      title: VmConfig
+      type: object
+      properties:
+        acpi:
+          type: boolean
+          default: true
+        agent:
+          type: string
+          example: '[enaled=]<1|0> [,fstrim_cloned_disks=<1|0>] [,type=<virtio|isa>]'
+        arch:
+          type: string
+        archive:
+          type: string
+        args:
+          type: string
+        audio0:
+          type: string
+        autostart:
+          type: boolean
+        balloon:
+          type: integer
+          minimum: 0
+          description: Amount of target RAM for the VM in MB. Using zero disables the balloon driver.
+        bios:
+          type: string
+          enum:
+            - seabios
+            - ovmf
+          default: seabios
+        boot:
+          type: string
+        bootdisk:
+          type: string
+        bwlimit:
+          type: integer
+          minimum: 0
+          description: Overrid I/O bandwitdh limit (in KiB/s).
+        cdrom:
+          type: string
+        cicustom:
+          type: string
+        cipassword:
+          type: string
+        citype:
+          type: string
+          enum:
+            - configdrive2
+            - nocloud
+            - opennebula
+          description: 'Specifies the cloud-init configuration format. The default depends on the confiugred operating system type (`ostype`. We use the `nocloud` format for Linux, and `configdrive2` for windows).'
+        ciuser:
+          type: string
+        cores:
+          type: integer
+          minimum: 1
+          default: 1
+        cpu:
+          type: string
+        cpulimit:
+          type: number
+          minimum: 0
+          maximum: 128
+          default: 0
+        cpuunits:
+          type: integer
+          default: 1024
+          minimum: 2
+          maximum: 262144
+        description:
+          type: string
+        efidisk0:
+          type: string
+        force:
+          type: boolean
+        freeze:
+          type: boolean
+        hookscript:
+          type: string
+        hostpci0:
+          type: string
+        hotplug:
+          type: string
+        hugepages:
+          type: string
+          enum:
+            - any
+            - '2'
+            - '1024'
+        ide0:
+          type: string
+        ipconfig0:
+          type: string
+        ivshmem:
+          type: string
+        keephugepages:
+          type: boolean
+          default: false
+        keyboard:
+          type: string
+          enum:
+            - de
+            - de-ch
+            - da
+            - en-gb
+            - en-us
+            - es
+            - fi
+            - fr
+            - fr-be
+            - fr-ca
+            - fr-ch
+            - hu
+            - is
+            - it
+            - ja
+            - lt
+            - mk
+            - nl
+            - 'no'
+            - pl
+            - pt
+            - pt-br
+            - sv
+            - sl
+            - tr
+        kvm:
+          type: string
+          default: '0'
+          enum:
+            - '0'
+            - '1'
+        live-restore:
+          type: boolean
+        localtime:
+          type: boolean
+        lock:
+          type: string
+          enum:
+            - backup
+            - clone
+            - create
+            - migrate
+            - rollback
+            - snapshot
+            - snapshot-delete
+            - suspending
+            - suspended
+        machine:
+          type: string
+        memory:
+          type: integer
+          minimum: 16
+          default: 512
+          exclusiveMaximum: false
+          description: Amount of RAM for the VM in MB. This is the maximum available memory when you use the balloon device.
+        migrate_downtime:
+          type: number
+          default: 0.1
+          minimum: 0
+        migrate_speed:
+          type: integer
+          default: 0
+          minimum: 0
+        name:
+          type: string
+        nameserver:
+          type: string
+        net0:
+          type: string
+        numa:
+          type: boolean
+          default: false
+        numa0:
+          type: string
+        onboot:
+          type: string
+          default: '0'
+          enum:
+            - '0'
+            - '1'
+        ostype:
+          type: string
+          enum:
+            - other
+            - wxp
+            - w2k
+            - w2k3
+            - w2k8
+            - wvista
+            - win7
+            - win8
+            - l24
+            - l26
+            - solaris
+        parallel0:
+          type: string
+        pool:
+          type: string
+        protection:
+          type: boolean
+          default: false
+        reboot:
+          type: boolean
+          default: true
+        rng0:
+          type: string
+        sata0:
+          type: string
+        sata1:
+          type: string
+        sata2:
+          type: string
+        scsi0:
+          type: string
+        scsi1:
+          type: string
+        scsi2:
+          type: string
+        scsihw:
+          type: string
+          enum:
+            - lsi
+            - lsi53c810
+            - virtio-scsi-pci
+            - virtio-scsi-single
+            - megasas
+            - pvscsi
+          default: lsi
+        searchdomain:
+          type: string
+        serial0:
+          type: string
+        shares:
+          type: integer
+          minimum: 0
+          maximum: 50000
+          default: 1000
+        smbios1:
+          type: string
+        smp:
+          type: integer
+          default: 1
+          minimum: 1
+        sockets:
+          type: integer
+          default: 1
+          minimum: 1
+        spice_enhancements:
+          type: string
+        sshkeys:
+          type: string
+        start:
+          type: boolean
+          default: false
+        startdate:
+          type: string
+          default: now
+        startup:
+          type: string
+        storage:
+          type: string
+        tablet:
+          type: boolean
+          default: true
+        tags:
+          type: string
+        tdf:
+          type: boolean
+          default: false
+        template:
+          type: boolean
+          default: false
+        unique:
+          type: boolean
+        unused0:
+          type: string
+        usb0:
+          type: string
+        usb1:
+          type: string
+        usb2:
+          type: string
+        usb3:
+          type: string
+        usb4:
+          type: string
+        vcpus:
+          type: integer
+          default: 0
+          minimum: 0
+        vga:
+          type: string
+        virtio0:
+          type: string
+        virtio1:
+          type: string
+        virtio2:
+          type: string
+        vmgenid:
+          type: string
+        vmstatestorage:
+          type: string
+        watchdog:
+          type: string
   responses: {}
   requestBodies: {}
   securitySchemes:
